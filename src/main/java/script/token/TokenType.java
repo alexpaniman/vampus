@@ -1,0 +1,32 @@
+package script.token;
+
+public enum TokenType {
+    STRING,
+    LITERAL,
+    SEND,
+    TEXT,
+    PHOTO,
+    REPLY_TO,
+    INLINE_MARKUP,
+    REPLY_MARKUP,
+    EXPECT_ANSWER,
+    CALLBACK_QUERY,
+    WHILE,
+    FOR,
+    THIS,
+    EDIT,
+    USER,
+    EQUAL,
+    COLON,
+    IF,
+    EQUALS,
+    MATCHES,
+    COMA,
+    STAR,
+    LRB,
+    RRB,
+    RCB,
+    LCB,
+    OR,
+    VARIABLE
+}
