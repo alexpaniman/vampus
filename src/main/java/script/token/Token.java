@@ -23,8 +23,9 @@ public class Token {
         this.next = null;
     }
 
-    public void setNext(Token next) {
+    public Token setNext(Token next) {
         this.next = next;
+        return this;
     }
 
     public TokenType type(){

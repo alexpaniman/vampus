@@ -17,22 +17,15 @@ public class Lexer {
         for (String str : Files.readAllLines(new File("src/main/resources/test_script.tsc").toPath()))
             sb.append(str).append("\n");
         Token token = new Lexer().tokenize(sb.toString());
-        System.out.println(sb.toString().replaceAll("[ \t\n]", ""));
-        System.out.println();
         while ((token = token.next()) != null)
-            System.out.print(//"Тип = " + token.type() + ". Значение = '" +
-                    token.value() //+ "'");
-            );
+            System.out.println("Тип = " + token.type() + ". Значение = '" + token.value() + "'");
     }
 
-    public int subStr(Token token, TokenType type, String str, char[] chars, int j, int old) {
-        if (old != j)
-            return j;
-        for (int i = j, h = 0; h < str.length() && i < chars.length; h++, i++)
-            if (chars[i] != str.charAt(h))
-                return j;
-        token.setNext(new Token(type, str));
-        return j + str.length();
+    private boolean subSeq(char[] arr, int start, String str) {
+        for (int i = 0, j = start; i < str.length(); i ++, j ++)
+            if (arr[j] != str.charAt(i))
+                return false;
+        return true;
     }
 
     public Token tokenize(String text) throws LexerException {
@@ -42,135 +35,266 @@ public class Lexer {
 
         char[] charArray = text.toCharArray();
 
-        boolean readString = false;
-        boolean readLiteral = false;
-        boolean readVariable = false;
-
-        StringBuilder literal = new StringBuilder();
-        StringBuilder string = new StringBuilder();
-        StringBuilder variable = new StringBuilder();
-
-        for (int i = 0, line = 0; i < charArray.length; i++) {
+        for (int i = 0; i < charArray.length; i++) {
             char sym = charArray[i];
 
-            if (sym == '\n')
-                line++;
+            if (sym == ' ' || sym == '\t' || sym == '\n')
+                continue;
 
-            if (readString && sym == '\'') {
-                token.setNext(new Token(STRING, string.toString()));
-                token = token.next();
-
-                string = new StringBuilder();
-
-                readString = false;
+            if (sym == '#') {
+                for (int j = i; j < charArray.length; j++) {
+                    if (charArray[j] == '\n')
+                        break;
+                    else
+                        i++;
+                }
                 continue;
             }
 
             if (sym == '\'') {
-                readString = true;
-                continue;
-            }
-
-            if (readString) {
-                string.append(sym);
-                continue;
-            }
-
-            if (sym == '#')
-                for (int j = i; j < charArray.length; j ++)
-                    if (charArray[j] == '\n')
+                StringBuilder string = new StringBuilder();
+                boolean closed = false;
+                for (int j = i + 1; j < charArray.length; j++)
+                    if (charArray[j] == '\'') {
+                        closed = true;
                         break;
+                    } else
+                        string.append(charArray[j]);
+                int line = 0;
+                for (int j = 0; j < i; j++)
+                    if (charArray[j] == '\n')
+                        line++;
+                if (!closed)
+                    throw new LexerException("Can't find end of string, which begins on " + (line + 1) + " line: " + string + "...");
+                token.setNext(new Token(STRING, string.toString()));
+                token = token.next();
+                i += string.length() + 1;
+                continue;
+            }
+
+            if (Character.isDigit(sym)) {
+                StringBuilder literal = new StringBuilder();
+                for (int j = i; j < charArray.length; j++)
+                    if (Character.isDigit(charArray[j]) || charArray[j] == '.')
+                        literal.append(charArray[j]);
                     else
-                        i ++;
-
-            if (readLiteral && String.valueOf(sym).matches("[^\\d]")) {
-                token.setNext(new Token(LITERAL, literal.toString()));
-                token = token.next();
-
-                literal = new StringBuilder();
-
-                readLiteral = false;
-            }
-
-            if (String.valueOf(sym).matches("\\d")) {
-                readLiteral = true;
-
-                literal.append(sym);
-                continue;
-            }
-
-            if (readVariable && String.valueOf(sym).matches("[^A-Za-z]")) {
-                token.setNext(new Token(LITERAL, literal.toString()));
-                token = token.next();
-
-                variable = new StringBuilder();
-
-                readVariable = false;
-            }
-
-            if (readVariable) {
-                token.setNext(new Token(VARIABLE, variable.toString()));
-                token = token.next();
-
-                variable = new StringBuilder();
-            }
-
-            final int old = i;
-
-            i = subStr(token, SEND, "SEND", charArray, i, old);
-            i = subStr(token, TEXT, "TEXT", charArray, i, old);
-            i = subStr(token, PHOTO, "PHOTO", charArray, i, old);
-            i = subStr(token, REPLY_TO, "REPLY_TO", charArray, i, old);
-            i = subStr(token, INLINE_MARKUP, "INLINE_MARKUP", charArray, i, old);
-            i = subStr(token, REPLY_MARKUP, "REPLY_MARKUP", charArray, i, old);
-            i = subStr(token, THIS, "THIS", charArray, i, old);
-            i = subStr(token, EDIT, "EDIT", charArray, i, old);
-            i = subStr(token, USER, "USER", charArray, i, old);
-            i = subStr(token, EQUAL, "=", charArray, i, old);
-            i = subStr(token, COLON, ":", charArray, i, old);
-            i = subStr(token, IF, "IF", charArray, i, old);
-            i = subStr(token, EQUALS, "EQUALS", charArray, i, old);
-            i = subStr(token, MATCHES, "MATCHES", charArray, i, old);
-            i = subStr(token, COMA, ",", charArray, i, old);
-            i = subStr(token, LRB, "(", charArray, i, old);
-            i = subStr(token, RRB, ")", charArray, i, old);
-            i = subStr(token, RCB, "}", charArray, i, old);
-            i = subStr(token, LCB, "{", charArray, i, old);
-            i = subStr(token, EXPECT_ANSWER, "EXPECT_ANSWER", charArray, i, old);
-            i = subStr(token, CALLBACK_QUERY, "CALLBACK_QUERY", charArray, i, old);
-            i = subStr(token, WHILE, "WHILE", charArray, i, old);
-            i = subStr(token, FOR, "FOR", charArray, i, old);
-            i = subStr(token, LCB, "{", charArray, i, old);
-            i = subStr(token, STAR, "*", charArray, i, old);
-            i = subStr(token, OR, "|", charArray, i, old);
-
-            if (old == i && String.valueOf(sym).matches("[A-Za-z]")) {
-                readVariable = true;
-                variable.append(sym);
-                continue;
-            }
-
-            if (old != i) {
-                token = token.next();
-                i--;
-            } else if (charArray[old] != '\n' && charArray[old] != '\t' && charArray[old] != ' ') {
-                StringBuilder str = new StringBuilder();
-                for (int j = old; j <= Math.min(old + 10, charArray.length); j++) {
-                    if (j == old)
-                        str.append("Unexpected symbol --> ");
-                    if (charArray[j] != ' ' && charArray[j] != '\t' && charArray[j] != '\n')
-                        str.append(charArray[j]);
+                        break;
+                try {
+                    Integer.parseInt(literal.toString());
+                    token.setNext(new Token(LITERAL, literal.toString()));
+                } catch (NumberFormatException nfe) {
+                    try {
+                        Double.parseDouble(literal.toString());
+                        token.setNext(new Token(DOUBLE, literal.toString()));
+                    } catch (NumberFormatException exc) {
+                        throw new LexerException("Illegal number format: " + literal.toString());
+                    }
                 }
-                str.insert(22, "[");
-                str.insert(24, "]");
-                if (old + 10 <= charArray.length - 1)
-                    str.append("...");
-                throw new LexerException("Unexpected symbol on line " + line + ": " + str);
+                token = token.next();
+                i += literal.length() - 1;
+                continue;
             }
-        }
 
-        if (literal.length() > 0)
-            token.setNext(new Token(LITERAL, literal.toString()));
+            if (Character.toString(sym).matches("^[A-Za-z_]$")) {
+                if (subSeq(charArray, i, "for")) {
+                    token.setNext(new Token(FOR, "for"));
+                    token = token.next();
+                    i += 2;
+                    continue;
+                } else if (subSeq(charArray, i, "while")) {
+                    token.setNext(new Token(WHILE, "while"));
+                    token = token.next();
+                    i += 4;
+                    continue;
+                } else if (subSeq(charArray, i, "if")) {
+                    token.setNext(new Token(IF, "if"));
+                    token = token.next();
+                    i ++;
+                    continue;
+                } else if (subSeq(charArray, i, "switch")) {
+                    token.setNext(new Token(SWITCH, "switch"));
+                    token = token.next();
+                    i += 5;
+                    continue;
+                } else if (subSeq(charArray, i, "true")) {
+                    token.setNext(new Token(BOOLEAN, "true"));
+                    token = token.next();
+                    i += 3;
+                    continue;
+                } else if (subSeq(charArray, i, "false")) {
+                    token.setNext(new Token(BOOLEAN, "false"));
+                    token = token.next();
+                    i += 4;
+                    continue;
+                } else if (subSeq(charArray, i, "else")) {
+                    token.setNext(new Token(ELSE, "else"));
+                    token = token.next();
+                    i += 3;
+                    continue;
+                } else if (subSeq(charArray, i, "do_while")) {
+                    token.setNext(new Token(DO_WHILE, "do_while"));
+                    token = token.next();
+                    i += 7;
+                    continue;
+                } else if (subSeq(charArray, i, "and")) {
+                    token.setNext(new Token(LOGICAL_AND, "and"));
+                    token = token.next();
+                    i += 2;
+                    continue;
+                } else if (subSeq(charArray, i, "or")) {
+                    token.setNext(new Token(LOGICAL_OR, "or"));
+                    token = token.next();
+                    i ++;
+                    continue;
+                } else if (subSeq(charArray, i, "return")) {
+                    token.setNext(new Token(RETURN, "return"));
+                    token = token.next();
+                    i += 5;
+                    continue;
+                } else if (subSeq(charArray, i, "null")) {
+                    token.setNext(new Token(NULL, "null"));
+                    token = token.next();
+                    i += 3;
+                    continue;
+                }
+                StringBuilder variable = new StringBuilder();
+                for (int j = i; j < charArray.length; j++)
+                    if (Character.toString(charArray[j]).matches("^[A-Za-z\\d_]$"))
+                        variable.append(charArray[j]);
+                    else
+                        break;
+                for (int j = variable.length() + i; j < charArray.length; j++)
+                    if (charArray[j] == '(') {
+                        token.setNext(new Token(FUNCTION, variable.toString()));
+                        break;
+                    } else if (charArray[j] != ' ' && charArray[j] != '\n' && charArray[j] != '\t')
+                        break;
+                if (token.next() == null)
+                    token.setNext(new Token(VARIABLE, variable.toString()));
+                token = token.next();
+                i += variable.length() - 1;
+                continue;
+            }
+
+            if (subSeq(charArray, i, "!=")) {
+                token.setNext(new Token(NOT_EQUAL, "!="));
+                token = token.next();
+                i ++;
+                continue;
+            } else if (subSeq(charArray, i, "==")) {
+                token.setNext(new Token(EQUALS, "=="));
+                token = token.next();
+                i ++;
+                continue;
+            } else if (subSeq(charArray, i, "|")) {
+                token.setNext(new Token(OR, "|"));
+                token = token.next();
+                continue;
+            } else if (subSeq(charArray, i, "&")) {
+                token.setNext(new Token(AND, "&"));
+                token = token.next();
+                continue;
+            } else if (subSeq(charArray, i, ">=")) {
+                token.setNext(new Token(MORE_OR_EQUAL, ">="));
+                token = token.next();
+                i ++;
+                continue;
+            } else if (subSeq(charArray, i, "<=")) {
+                token.setNext(new Token(LESS_OR_EQUAL, "<="));
+                token = token.next();
+                i ++;
+                continue;
+            } else if (subSeq(charArray, i, ">")) {
+                token.setNext(new Token(MORE, ">"));
+                token = token.next();
+                continue;
+            } else if (subSeq(charArray, i, "<")) {
+                token.setNext(new Token(LESS, "<"));
+                token = token.next();
+                continue;
+            } else if (subSeq(charArray, i, "%")) {
+                token.setNext(new Token(MOD, "%"));
+                token = token.next();
+                continue;
+            } else if (subSeq(charArray, i, "^")) {
+                token.setNext(new Token(XOR, "^"));
+                token = token.next();
+                continue;
+            }
+
+            switch (sym) {
+                case '(':
+                    token.setNext(new Token(LRB, "("));
+                    token = token.next();
+                    continue;
+                case ')':
+                    token.setNext(new Token(RRB, ")"));
+                    token = token.next();
+                    continue;
+                case '{':
+                    token.setNext(new Token(LCB, "{"));
+                    token = token.next();
+                    continue;
+                case '}':
+                    token.setNext(new Token(RCB, "}"));
+                    token = token.next();
+                    continue;
+                case '[':
+                    token.setNext(new Token(LSB, "["));
+                    token = token.next();
+                    continue;
+                case ']':
+                    token.setNext(new Token(RSB, "]"));
+                    token = token.next();
+                    continue;
+                case ':':
+                    token.setNext(new Token(COLON, ":"));
+                    token = token.next();
+                    continue;
+                case ';':
+                    token.setNext(new Token(SEMICOLON, ";"));
+                    token = token.next();
+                    continue;
+                case ',':
+                    token.setNext(new Token(COMA, ","));
+                    token = token.next();
+                    continue;
+                case '*':
+                    token.setNext(new Token(MULTIPLY, "*"));
+                    token = token.next();
+                    continue;
+                case '=':
+                    token.setNext(new Token(EQUAL, "="));
+                    token = token.next();
+                    continue;
+                case '/':
+                    token.setNext(new Token(DIVIDE, "/"));
+                    token = token.next();
+                    continue;
+                case '-':
+                    token.setNext(new Token(SUBTRACT, "-"));
+                    token = token.next();
+                    continue;
+                case '+':
+                    token.setNext(new Token(ADD, "+"));
+                    token = token.next();
+                    continue;
+            }
+
+            StringBuilder str = new StringBuilder();
+            int line = 0;
+            for (int j = 0; j < i; j++)
+                if (charArray[j] == '\n')
+                    line++;
+            for (int j = i; j <= Math.min(i + 10, charArray.length - 1); j++) {
+                if (charArray[j] == '\n')
+                    break;
+                str.append(charArray[j]);
+            }
+            if (str.length() < charArray.length - 1)
+                str.append("...");
+            throw new LexerException("Unexpected symbol on line " + (line + 1) + " ==> " + str);
+        }
 
         return HEAD;
     }
