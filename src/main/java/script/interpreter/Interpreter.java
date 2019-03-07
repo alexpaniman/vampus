@@ -1,5 +1,6 @@
 package script.interpreter;
 
+import bot.TelegramInterpreter;
 import com.google.common.base.Preconditions;
 import script.analysis.Lexer;
 import script.analysis.LexerException;
@@ -44,6 +45,11 @@ public class Interpreter {
             this.HEAD = HEAD.next();
         variables = new HashMap<>();
         functions = new ArrayList<>();
+    }
+
+    public Interpreter setupVar(String name, Object value) {
+        variables.put(name, value);
+        return this;
     }
 
     private class Result {

@@ -16,7 +16,7 @@ public class TFProcessor {
     }
 
     public Object func(String name, Object... objects) throws NoSuchMethodException, InterpretationException {
-        for (Method method : obj.getClass().getDeclaredMethods())
+        for (Method method : obj.getClass().getMethods())
             if (method.isAnnotationPresent(TelescriptFunction.class)) {
                 TelescriptFunction tf = method.getAnnotation(TelescriptFunction.class);
                 if (tf.name().equals(name)) {
@@ -48,7 +48,7 @@ public class TFProcessor {
     }
 
     public Object func(String name, Map<String, Object> objects) throws NoSuchMethodException, InterpretationException {
-        for (Method method : obj.getClass().getDeclaredMethods())
+        for (Method method : obj.getClass().getMethods())
             if (method.isAnnotationPresent(TelescriptFunction.class)) {
                 TelescriptFunction tf = method.getAnnotation(TelescriptFunction.class);
                 if (tf.name().equals(name) && tf.params().length > 0) {
