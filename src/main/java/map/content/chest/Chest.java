@@ -16,7 +16,7 @@ public class Chest implements Content {
     private Item item;
 
     private Chest(Random random) {
-        item = new RandomInstance<>(random, Bow::new).instance(100);
+        item = new RandomInstance<>(random, Rifle::new).instance(100);
         /*int rand = (int) Math.ceil(random.nextDouble() * 100);
         if (rand <= 60)
             item = new Bow();

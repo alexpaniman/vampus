@@ -128,8 +128,6 @@ public class Cell implements Serializable {
     }
 
     public Content content() {
-        if (content == null)
-            return null;
         return content;
     }
 

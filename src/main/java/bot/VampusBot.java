@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
@@ -228,6 +229,26 @@ public class VampusBot extends TelegramLongPollingBot {
             return sendApiMethod(sendMessage).getMessageId();
         } catch (TelegramApiException exc) {
             throw new IllegalArgumentException(exc);
+        }
+    }
+
+    public void delete(long chat, int message_id) {
+        try {
+            deleteMessage(
+                    new DeleteMessage()
+                        .setMessageId(message_id)
+                        .setChatId(String.valueOf(chat))
+            );
+        } catch (TelegramApiException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    public void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
