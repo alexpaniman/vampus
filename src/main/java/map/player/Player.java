@@ -12,6 +12,8 @@ import map.content.chest.Chest;
 import map.content.chest.Item;
 import map.content.portal.Portal;
 import org.apache.log4j.Logger;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -54,8 +56,36 @@ public class Player implements Serializable {
         return id;
     }
 
-    public void kill() {
+    public void hit(VampusBot bot, int damage) {
+        hp -= damage;
+        if (hp > 0) {
+            bot.edit(
+                    new State(
+                            "Вы потеряли 1 хп, теперь у вас: " +
+                            hp +
+                            ". Вы вернулись на предыдущую клетку!"
+                    ),
+                    id,
+                    game_inst
+            );
+            bot.sleep(5);
+        } else {
+            bot.edit(new State("Вас убили! Игра завершена."), id, game_inst);
+            game_inst = -1;
+        }
+    }
+
+    public void kill(VampusBot bot) {
         hp = 0;
+        bot.edit(new State("Вас убили! Игра завершена."), id, game_inst);
+        bot.sleep(5);
+        removeInstance(bot);
+        game_inst = -1;
+    }
+
+    public void removeInstance(VampusBot bot) {
+        if (game_inst != -1)
+            bot.delete(id, game_inst);
     }
 
     public int gameInstance() {
@@ -96,10 +126,12 @@ public class Player implements Serializable {
         Cell next = unaryCell.apply(pos);
         if (next == null)
             return false;
-        pos = next;
-        pos.addPlayer(this);
-        if (!pos.empty())
-            pos.content().enter(bot, this);
+        if (!next.empty()) {
+            if (next.content().enter(bot, this))
+                setPos(next);
+        } else {
+            setPos(next);
+        }
         return true;
     }
 
@@ -167,6 +199,8 @@ public class Player implements Serializable {
     }
 
     public void action(VampusBot bot, String action) {
+        if (game_inst == -1)
+            return;
         logger.debug("Execute action: '" + action + "'");
         try {
             switch (action) {
