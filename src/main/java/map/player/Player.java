@@ -1,108 +1,83 @@
 package map.player;
 
-import com.google.common.base.Joiner;
-import com.google.common.cache.LoadingCache;
+import bot.VampusBot;
+import javafx.util.Pair;
+import map.State;
 import map.cell.Cell;
 import map.content.Content;
-import map.content.Hole;
-import map.content.Vampus;
-import map.content.VampusInHole;
+import map.content.deadly.Hole;
+import map.content.deadly.Vampus;
+import map.content.deadly.VampusInHole;
 import map.content.chest.Chest;
-import map.content.chest.items.Item;
+import map.content.chest.Item;
 import map.content.portal.Portal;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "SameParameterValue", "unused"})
 public class Player implements Serializable {
+    private int hp;
     private Cell pos;
+    private int game_inst;
     private final long id;
+    private Item active;
     private List<Item> items;
+    private Map<Object, Object> drawProperty;
+    private static Logger logger = Logger.getLogger(Player.class);
 
-    public static void main(String[] args) {
-        /*MapGenerator generator = new MapGenerator(123);
-        Cell cell = generator.generateMap();
-        StringBuilder init = new StringBuilder();
-        StringBuilder link = new StringBuilder();
-
-        Cell i = cell;
-        for (int g = 0; (i = i.down()) != null; g ++) {
-            Cell j = i;
-            for (int q = 0; (j = j.right()) != null; q ++) {
-                String ind = "\"" + j.hash() + "\"";
-                init.append(ind).append(";\n");
-                if (j.left() != null)
-                    link.append(ind).append("--").append("\"").append(j.left().hash()).append("\"").append(";\n");
-                if (j.right() != null)
-                    link.append(ind).append("--").append("\"").append(j.right().hash()).append("\"").append(";\n");
-                if (j.up() != null)
-                    link.append(ind).append("--").append("\"").append(j.up().hash()).append("\"").append(";\n");
-                if (j.down() != null)
-                    link.append(ind).append("--").append("\"").append(j.down().hash()).append("\"").append(";\n");
-            }
-        }
-        String dot = "graph G {\n" + init + link + "}";
-        File file = new File("graph.dot");
-        try {
-            PrintWriter pw = new PrintWriter(file);
-            pw.print(dot);
-            pw.flush();
-            pw.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0; i < 100; i ++)
-        System.out.println(new Player(generator.generateMap().down().down().right().right().right().right(), "Alex").serialize());
-        FileOutputStream fos = new FileOutputStream("test.txt");
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(generator.generateMap());
-        oos.flush();
-        oos.close();
-        FileInputStream fis = new FileInputStream("test.txt");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        Cell cell = (Cell) ois.readObject();
-        System.out.println(new LevelDraw(new Player(cell, "None")).draw(true));*/
-    }
-
-    public Player(Cell pos, long id) {
+    public Player(Cell pos, long id, int hp) {
+        this.hp = hp;
         this.id = id;
         this.pos = pos;
         this.items = new ArrayList<>();
-        pos.addUser(this);
+        this.drawProperty = new HashMap<>();
+        pos.addPlayer(this);
+        logger.info("New player(id = " + id + ") was be created");
     }
 
-    public static Player parse(LoadingCache<Integer, Cell> cellCache, LoadingCache<Integer, Item> itemCache, String str) {
-        try {
-            String[] split = str.split("-");
-            int y = Integer.parseInt(split[1]);
-            int x = Integer.parseInt(split[2]);
-            long id = Integer.parseInt(split[0]);
-            int level_hash = Integer.parseInt(split[3]);
-            Cell pos = cellCache.get(level_hash);
-            List<Item> items = new ArrayList<>();
-            for (int i = 4; i < split.length; i++)
-                items.add(itemCache.get(Integer.parseInt(split[i])));
-            for (int i = 0; i < y; i++) pos = pos.down();
-            for (int i = 0; i < x; i++) pos = pos.right();
-            return new Player(pos, id).setItems(items);
-        } catch (ExecutionException exec) {
-            throw new IllegalArgumentException();
-        }
+    public void appendDrawProperty(Map<Cell, String> drawProperty) {
+        this.drawProperty.putAll(drawProperty);
     }
 
-    private Player setItems(List<Item> items) {
-        this.items = items;
-        return this;
+    public void deleteItem(Item item) {
+        items.remove(item);
+        if (active == item)
+            active = null;
+    }
+
+    public long id() {
+        return id;
+    }
+
+    public void kill() {
+        hp = 0;
+    }
+
+    public int gameInstance() {
+        return game_inst;
+    }
+
+    public Cell position() {
+        return pos;
+    }
+
+    public Player deleteContent() {
+        return this.setContent(null);
+    }
+
+    public void activate(Item item) {
+        this.active = item;
+        if (item != null)
+            this.active.defaultState(this);
     }
 
     public Player setPos(Cell pos) {
+        this.pos.addPlayer(this);
         this.pos = pos;
         return this;
     }
@@ -112,63 +87,148 @@ public class Player implements Serializable {
         return this;
     }
 
-    public long id() {
-        return id;
-    }
-
-    public Cell position() {
-        return pos;
-    }
-
-    public Content content() {
-        return pos.content();
-    }
-
     public Player setContent(Content content) {
         pos.setContent(content);
         return this;
     }
 
-    public Player deleteContent() {
-        return this.setContent(null);
-    }
-
-    public boolean left() {
-        if (pos.left() == null)
+    public boolean enter(VampusBot bot, UnaryOperator<Cell> unaryCell) {
+        Cell next = unaryCell.apply(pos);
+        if (next == null)
             return false;
-        pos = pos.left();
-        pos.addUser(this);
+        pos = next;
+        pos.addPlayer(this);
+        if (!pos.empty())
+            pos.content().enter(bot, this);
         return true;
     }
 
-    public boolean right() {
-        if (pos.right() == null)
-            return false;
-        pos = pos.right();
-        pos.addUser(this);
-        return true;
+    public List<Item> items() {
+        return items;
     }
 
-    public boolean up() {
-        if (pos.up() == null)
-            return false;
-        pos = pos.up();
-        pos.addUser(this);
-        return true;
+    private List<Pair<String, String>> itemsMap() {
+        List<Pair<String, String>> items = new ArrayList<>();
+        for (int index = 0; index < this.items.size(); index++)
+            items.add(new Pair<>(this.items.get(index).icon(), "activate " + index));
+        while (items.size() < 5)
+            items.add(new Pair<>("∅", "∅"));
+        return items;
     }
 
-    public boolean down() {
-        if (pos.down() == null)
-            return false;
-        pos = pos.down();
-        pos.addUser(this);
-        return true;
+    private State appendControls(State state) {
+        return state.addRow(itemsMap()).addRow("↑").addRow("←", "→").addRow("↓");
+    }
+
+    private void instance(VampusBot vb, State state, boolean new_instance) {
+        if (new_instance)
+            this.game_inst = vb.send(state, id);
+        else
+            vb.edit(state, id, game_inst);
+    }
+
+    private void instance(VampusBot vb, boolean new_instance, boolean debug) {
+        if (active != null) {
+            State state = active.state().clone();
+            instance(
+                    vb,
+                    state.setMessage(
+                            draw(
+                                    debug,
+                                    active.drawProperty(),
+                                    state.message()
+                            )
+                    ),
+                    new_instance
+            );
+        } else if (pos.empty())
+            instance(vb, appendControls(new State(draw())), new_instance);
+        else {
+            State state = pos.content().state() == null ? null : appendControls(pos.content().state().clone());
+            if (state == null)
+                instance(vb, appendControls(new State(draw())), new_instance);
+            else
+                instance(
+                        vb,
+                        state.setMessage(
+                                draw(
+                                        false,
+                                        new HashMap(),
+                                        state.message()
+                                )
+                        ),
+                        new_instance
+                );
+        }
+    }
+
+    public void instance(VampusBot bot) {
+        instance(bot, false, false);
+    }
+
+    public void action(VampusBot bot, String action) {
+        logger.debug("Execute action: '" + action + "'");
+        try {
+            switch (action) {
+                case "↑":
+                case "←":
+                case "→":
+                case "↓":
+                    switch (action) {
+                        case "↑":
+                            enter(bot, Cell::up);
+                            break;
+                        case "←":
+                            enter(bot, Cell::left);
+                            break;
+                        case "→":
+                            enter(bot, Cell::right);
+                            break;
+                        case "↓":
+                            enter(bot, Cell::down);
+                            break;
+                    }
+                    instance(bot, false, false);
+                    break;
+                case "instance":
+                    instance(bot, true, false);
+                    logger.info("Creating new game instance: " + game_inst);
+                    break;
+                case "cancel":
+                    logger.debug("Deactivate " + active.icon());
+                    this.active = null;
+                    instance(bot, true, false);
+                    break;
+                default:
+                    String[] command = action.split(" ");
+                    switch (command[0]) {
+                        case "content":
+                            assert !pos.empty();
+                            assert command.length == 2;
+                            pos.content().changeState(bot, this, command[1]);
+                            instance(bot, false, false);
+                            break;
+                        case "item":
+                            assert active != null;
+                            assert command.length == 2;
+                            active.changeState(bot, this, command[1]);
+                            instance(bot, false, false);
+                            break;
+                        case "activate":
+                            assert command.length == 2;
+                            activate(items.get(Integer.parseInt(command[1])));
+                            instance(bot, false, false);
+                            break;
+                    }
+                    break;
+            }
+        } catch (Exception exc) {
+            logger.error("Exception occurred when executing action", exc);
+        }
     }
 
     private String feelingsFrom(Player player, Cell thisCell) {
-        if (player.position() == thisCell)
-            return "\uD83D\uDC64";
-        if (!thisCell.contains(player.id()))
+        if (!thisCell.contains(player))
             return "⬛";
         Set<Class> set = Stream.of(thisCell.down(), thisCell.right(), thisCell.up(), thisCell.left())
                 .filter(Objects::nonNull)
@@ -181,8 +241,7 @@ public class Player implements Serializable {
         if (set.contains(VampusInHole.class)) {
             smell = true;
             wind = true;
-        }
-        else if (set.contains(Vampus.class))
+        } else if (set.contains(Vampus.class))
             smell = true;
         else if (set.contains(Hole.class))
             wind = true;
@@ -198,8 +257,6 @@ public class Player implements Serializable {
     }
 
     private String debugFrom(Player player, Cell thisCell) {
-        if (player.position() == thisCell)
-            return "\uD83D\uDC64";
         if (thisCell.empty())
             return "⬜";
         else {
@@ -219,7 +276,56 @@ public class Player implements Serializable {
         }
     }
 
-    public String draw(boolean debug) {
+    private String feelingsMessage(Player player) {
+        Set<Class> set = Stream.of(
+                player.position().down(),
+                player.position().right(),
+                player.position().up(),
+                player.position().left()
+        )
+                .filter(Objects::nonNull)
+                .map(Cell::content)
+                .filter(Objects::nonNull)
+                .map(Object::getClass)
+                .collect(Collectors.toSet());
+
+        boolean smell = false;
+        boolean wind = false;
+
+        if (set.contains(Hole.class))
+            wind = true;
+        else if (set.contains(Vampus.class))
+            smell = true;
+        else if (set.contains(VampusInHole.class)) {
+            smell = true;
+            wind = true;
+        }
+
+        if (smell && wind)
+            return "Вы чувствуете ветер и запах";
+        else if (smell)
+            return "Вы чувствуете запах";
+        else if (wind)
+            return "Вы чувствуете ветер";
+        else
+            return "Вы ничего не чувствуете";
+    }
+
+    private String toLines(String message, int length) {
+        StringBuilder main = new StringBuilder();
+        StringBuilder line = new StringBuilder();
+        for (String word : message.split(" "))
+            if (line.length() + word.length() > length) {
+                main.append(line).append("\n");
+                line = new StringBuilder();
+                line.append(word).append(" ");
+            } else line.append(word).append(" ");
+        if (line.length() > 0)
+            main.append(line);
+        return main.toString();
+    }
+
+    public String draw(boolean debug, Map drawPolicy, String message) {
         List<Cell> leftList = new ArrayList<>();
         Cell leftCell = this.position().level();
         do {
@@ -230,43 +336,62 @@ public class Player implements Serializable {
             StringBuilder row = new StringBuilder();
             Cell rowCell = l;
             do {
-                if (debug) {
+                if (position() == rowCell) {
+                    row.append("\uD83D\uDC64");
+                    continue;
+                }
+                Object drawProperty = this.drawProperty.get(rowCell);
+                if (drawProperty != null) {
+                    row.append(drawProperty);
+                    continue;
+                }
+                Object cellDraw = drawPolicy.get(rowCell);
+                if (cellDraw != null)
+                    row.append(cellDraw);
+                else if (debug)
                     row.append(debugFrom(this, rowCell));
-                } else
+                else
                     row.append(feelingsFrom(this, rowCell));
             } while ((rowCell = rowCell.right()) != null);
             mainBuilder.append(row.toString()).append("\n");
         }
+        int right_size = 0;
+        Cell level = pos.level();
+        while (level != null) {
+            right_size++;
+            level = level.right();
+        }
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < right_size; i++)
+            line.append("➖");
+        mainBuilder
+                .append("\n")
+                .append(line)
+                .append("\n")
+                .append(toLines(feelingsMessage(this), right_size * 2))
+                .append("\n");
+        if (active != null) {
+            mainBuilder
+                    .append("\n")
+                    .append(line)
+                    .append("\n");
+            mainBuilder
+                    .append("[")
+                    .append(active.icon())
+                    .append("] описание:\n\n")
+                    .append(toLines(active.description(), right_size * 2))
+                    .append("\n");
+        } else if (message != null)
+            mainBuilder
+                    .append("\n")
+                    .append(line)
+                    .append("\n")
+                    .append(message)
+                    .append("\n");
         return mainBuilder.toString();
     }
 
     public String draw() {
-        return draw(false);
-    }
-
-    public String serialize() {
-        int y = 0; for (Cell cell = pos; (cell = cell.up()) != null; )   y ++;
-        int x = 0; for (Cell cell = pos; (cell = cell.left()) != null; ) x ++;
-        return      id  +
-                    "-" +
-                    x   +
-                    "-" +
-                    y   +
-                    "-" +
-                    pos
-                            .level()
-                            .hashCode() + (
-                            items.size() == 0?
-                                    "" : "-" +
-                                    Joiner
-                                            .on("-")
-                                            .join(
-                                                    items
-                                                            .stream()
-                                                            .mapToInt(Object::hashCode)
-                                                            .boxed()
-                                                            .collect(Collectors.toList())
-                                            )
-                    );
+        return draw(false, new HashMap<>(), null);
     }
 }

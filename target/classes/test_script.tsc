@@ -1,8 +1,15 @@
-send(
-    text = 'Text',
-    chat = 505120843,
-    reply = [
-        ['Button', 'Button'],
-        ['Button']
-    ]
-);
+alex = 505120843;
+counter = 0;
+condition = true;
+for (var = 0; condition; var = var + 1) {
+    if (text(alex) != 'stop')
+        println('Not stop!');
+    else {
+        println('+ 1 "stop". Total: ' + (counter + 1));
+        counter = counter + 1;
+    }
+    if (counter == 3) {
+        println('Stop!!');
+        condition = false;
+    }
+}

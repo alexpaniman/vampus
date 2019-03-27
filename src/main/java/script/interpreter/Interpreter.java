@@ -1,7 +1,5 @@
 package script.interpreter;
 
-import bot.TelegramInterpreter;
-import com.google.common.base.Preconditions;
 import script.analysis.Lexer;
 import script.analysis.LexerException;
 import script.commands.CommandInterpreter;
@@ -25,15 +23,16 @@ public class Interpreter {
     private List<Function> functions;
 
     public static void main(String[] args) throws IOException, LexerException, InterpretationException {
-        StringBuilder sb = new StringBuilder();
-        for (String str : Files.readAllLines(new File("src/main/resources/test_script.tsc").toPath()))
-            sb.append(str).append("\n");
-        Token HEAD = new Lexer().tokenize(sb.toString());
+        Interpreter.executeScript(
+                new CommandInterpreter(),
+                "src/main/resources/test_script.tsc"
+        );
+    }
+
+    public static void executeScript(Object interpreter, String path) throws IOException, LexerException, InterpretationException {
         new Interpreter(
-                new TFProcessor(
-                        new CommandInterpreter()
-                ),
-                HEAD
+                path,
+                interpreter
         ).executeScript();
     }
 
@@ -47,9 +46,39 @@ public class Interpreter {
         functions = new ArrayList<>();
     }
 
-    public Interpreter setupVar(String name, Object value) {
-        variables.put(name, value);
+    public Interpreter(String path, Object interpreter) throws IOException, LexerException {
+        this(
+                new TFProcessor(
+                        interpreter
+                ),
+                new Lexer().tokenize(
+                        Files.lines(
+                                new File(
+                                        path
+                                ).toPath()
+                        )
+                                .map(line -> (Object) line)
+                                .reduce(new StringBuilder(), (builder, line) -> ((StringBuilder) builder)
+                                        .append(line)
+                                        .append('\n')
+                                )
+                                .toString()
+                )
+        );
+    }
+
+    public Interpreter enviroment(Map<String, Object> vars) {
+        variables.putAll(vars);
         return this;
+    }
+
+    public Interpreter enviroment(String name, Object obj) {
+        variables.put(name, obj);
+        return this;
+    }
+
+    public Object variable(String name) {
+        return variables.get(name);
     }
 
     private class Result {
@@ -92,13 +121,13 @@ public class Interpreter {
         String functionName = HEAD.value();
         List<Object> args = new ArrayList<>();
         Map<String, Object> args_map = new HashMap<>();
-        next(2);
+        HEAD = HEAD.next().next();
         Result result;
         do {
             String var = null;
             if (HEAD.type().equals(VARIABLE) && HEAD.next() != null && HEAD.next().type().equals(EQUAL)) {
                 var = HEAD.value();
-                next(2);
+                HEAD = HEAD.next().next();
             }
             result = calculateExpression();
             if (result == null)
@@ -150,7 +179,7 @@ public class Interpreter {
                     while (!HEAD.type().equals(RCB) && !HEAD.type().equals(RETURN)) {
                         execute();
                         if (HEAD.type().equals(SEMICOLON))
-                            next(1);
+                            HEAD = HEAD.next();
                     }
                     if (HEAD.type().equals(RETURN)) {
                         HEAD = HEAD.next();
@@ -184,7 +213,7 @@ public class Interpreter {
                         break;
                 }
                 if (variables.size() == 0)
-                    equals =  true;
+                    equals = true;
                 if (equals) {
                     Map<String, Object> backup = new HashMap<>(this.variables);
                     try {
@@ -356,7 +385,7 @@ public class Interpreter {
     private void executeLoopIf(boolean condition) throws InterpretationException {
         if (HEAD.type().equals(LCB)) {
             if (condition) {
-                next(1);
+                HEAD = HEAD.next();
                 while (!HEAD.type().equals(RCB))
                     execute();
             } else {
@@ -501,35 +530,5 @@ public class Interpreter {
             return;
         }
         HEAD = null;
-    }
-
-    private boolean next(int num) {
-        for (int i = 0; i < num; i ++) {
-            if (HEAD == null)
-                return false;
-            HEAD = HEAD.next();
-        }
-        return true;
-    }
-
-    private void nextTo(TokenType type) {
-        int sb = 0;
-        int cb = 0;
-        int rb = 0;
-        while (HEAD != null && !HEAD.type().equals(type) && sb == 0 && cb == 0 && rb == 0) {
-            if (HEAD.type() == LRB)
-                rb ++;
-            else if (HEAD.type() == RRB)
-                rb --;
-            else if (HEAD.type() == LCB)
-                cb ++;
-            else if (HEAD.type() == RCB)
-                cb --;
-            else if (HEAD.type() == LSB)
-                sb ++;
-            else if (HEAD.type() == RSB)
-                sb --;
-            next(1);
-        }
     }
 }

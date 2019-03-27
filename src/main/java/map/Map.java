@@ -11,9 +11,12 @@ public class Map implements Serializable {
     private List<Cell[][]> levels;
     private Player[] players;
 
+    private int immutable_hash;
+
     public Map(List<Cell[][]> levels, Player[] players) {
         this.levels = levels;
         this.players = players;
+        this.immutable_hash = Objects.hashCode(levels, players);
     }
 
     public Player player(int ind) {
@@ -30,6 +33,6 @@ public class Map implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(levels, players);
+        return immutable_hash;
     }
 }

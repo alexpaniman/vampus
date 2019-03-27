@@ -1,17 +1,23 @@
 package map.content.chest;
 
-import map.cell.Cell;
+import bot.VampusBot;
+import map.State;
 import map.content.chest.items.*;
 import map.content.Content;
+import map.player.Player;
+
+import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
 
 @SuppressWarnings("unused")
 public class Chest implements Content {
+    private Map drawProperty;
+    private State state;
     private Item item;
 
-    public Chest(Random random) {
-        int rand = (int) Math.ceil(random.nextDouble() * 100);
+    private Chest(Random random) {
+        item = new RandomInstance<>(random, Bow::new).instance(100);
+        /*int rand = (int) Math.ceil(random.nextDouble() * 100);
         if (rand <= 60)
             item = new Bow();
         else if (rand <= 80)
@@ -21,23 +27,30 @@ public class Chest implements Content {
         else if (rand <= 95)
             item = new Bomb();
         else if (rand <= 100)
-            item = new Teleport();
+            item = new Teleport();*/
+
+        //item = new Bomb();
     }
 
     public Chest() {
         this(new Random());
     }
 
-    public Item getItem() {
-        return item;
-    }
-
-    public boolean empty() {
-        return item == null;
+    @Override
+    public void changeState(VampusBot bot, Player player, String command) {
+        if (command.equals("get")) {
+            player.add(item);
+            player.position().deleteContent();
+        }
     }
 
     @Override
-    public BiFunction<Cell, Cell, Boolean> notSettable() {
-        return (cell, current) -> false;
+    public State state() {
+        return new State("В сундуке лежит " + item.icon()).addRow("Взять:content get");
+    }
+
+    @Override
+    public String icon() {
+        return "\uD83D\uDCE6";
     }
 }

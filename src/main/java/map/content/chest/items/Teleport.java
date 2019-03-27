@@ -1,5 +1,7 @@
 package map.content.chest.items;
 
-public class Teleport extends Item {
+import java.io.Serializable;
+
+public class Teleport implements Serializable {
 
 }

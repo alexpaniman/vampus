@@ -25,17 +25,31 @@ public class PlayersCache {
         return null;
     }
 
-    public int size() {
-        return maps.size();
-    }
-
-    public LinkedList<Map> getCache() {
-        return maps;
+    public Map findMap(int player_id) {
+        for (Map map: maps)
+            for (Player player: map.players())
+                if (player.id() == player_id)
+                    return map;
+        return null;
     }
 
     public void load(Map map) {
         maps.add(map);
         if (maps.size() > max_size)
             maps.pollFirst();
+    }
+
+    public int delete(int player_id) {
+        for (int i = 0; i < maps.size(); i ++)
+            for (Player player: maps.get(i).players())
+                if (player.id() == player_id) {
+                    Map map = maps.remove(i);
+                    return map.hashCode();
+                }
+        return 0;
+    }
+
+    public LinkedList<Map> maps() {
+        return maps;
     }
 }
