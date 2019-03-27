@@ -2,82 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e834ca03-ec54-483b-881f-d27a1cb3aeaa" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/State.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/Item.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/RandomInstance.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/Hole.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/Vampus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/VampusInHole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4964b72d-4cd9-4d18-98f4-2a47b65198b8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/4964b72d-4cd9-4d18-98f4-2a47b65198b8.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/ScriptBot.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/TelegramInterpreter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/ThreadInterpreter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/VampusBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bot/VampusBot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/Map.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/Map.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/cell/Cell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/cell/Cell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/Content.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/Content.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/Hole.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/Vampus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/VampusInHole.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/Chest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/Chest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Crossbow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Crossbow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Item.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Rifle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Rifle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Teleport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Teleport.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/portal/Portal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/portal/Portal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/player/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/tools/MapGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/tools/MapGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/tools/PlayersCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/tools/PlayersCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/script/commands/CommandInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/script/commands/CommandInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/script/interpreter/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/script/interpreter/Interpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/game_settings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/game_settings.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/test_script.tsc" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/test_script.tsc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/ScriptBot.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/TelegramInterpreter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/ThreadInterpreter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$1$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$1$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$2$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$2$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$2$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$3$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$3$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$3$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bot/VampusBot.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/game_settings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/game_settings.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/Map.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/Map.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/cell/Cell$CellBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/cell/Cell$CellBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/cell/Cell.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/cell/Cell.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/Content.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/Content.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/Hole.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/Vampus.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/VampusInHole.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/Chest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/Chest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bow.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bow.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Crossbow.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Crossbow.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Item.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Teleport.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Teleport.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/portal/Portal.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/portal/Portal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/player/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/tools/MapGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/tools/MapGenerator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/tools/PlayersCache.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/tools/PlayersCache.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/script/commands/CommandInterpreter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/script/commands/CommandInterpreter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$Function.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$Function.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$Result.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter$Result.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/script/interpreter/Interpreter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test_script.tsc" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/test_script.tsc" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -113,7 +38,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/bot/VampusBot.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-19">
-              <caret line="133" column="41" lean-forward="true" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
+              <caret line="133" column="41" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="initializer##0;class#VampusBot#0" />
@@ -129,8 +54,8 @@
       <file leaf-file-name="Bow.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="461">
-              <caret line="85" lean-forward="true" selection-start-line="85" selection-end-line="85" />
+            <state relative-caret-position="64">
+              <caret line="84" column="1" selection-start-line="84" selection-start-column="1" selection-end-line="84" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -151,7 +76,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-243">
-              <caret line="23" column="14" lean-forward="true" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
+              <caret line="23" column="14" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -160,7 +85,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/map/player/Player.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="305">
-              <caret line="137" column="39" lean-forward="true" selection-start-line="137" selection-start-column="39" selection-end-line="137" selection-end-column="39" />
+              <caret line="137" column="39" selection-start-line="137" selection-start-column="39" selection-end-line="137" selection-end-column="39" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#Player#0;class#Player#0" />
@@ -330,134 +255,6 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="bot" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="cell" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="content" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="content" type="462c0819:PsiDirectoryNode" />
-              <item name="chest" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="content" type="462c0819:PsiDirectoryNode" />
-              <item name="chest" type="462c0819:PsiDirectoryNode" />
-              <item name="items" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="content" type="462c0819:PsiDirectoryNode" />
-              <item name="deadly" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="content" type="462c0819:PsiDirectoryNode" />
-              <item name="portal" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="map" type="462c0819:PsiDirectoryNode" />
-              <item name="player" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-              <item name="analysis" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-              <item name="commands" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-              <item name="interpreter" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
-              <item name="vampus" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-              <item name="token" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
@@ -698,7 +495,7 @@
       <workItem from="1553598271709" duration="952000" />
       <workItem from="1553624263184" duration="241000" />
       <workItem from="1553632276819" duration="596000" />
-      <workItem from="1553639853862" duration="4602000" />
+      <workItem from="1553639853862" duration="6031000" />
     </task>
     <servers />
   </component>
@@ -735,7 +532,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="554597000" />
+    <option name="totallyTimeSpent" value="556026000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -748,7 +545,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50104165" side_tool="true" weight="0.2678002" />
@@ -768,8 +564,8 @@
       <window_info anchor="bottom" id="Java Enterprise" order="12" weight="0.32897604" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49946696" visible="true" weight="0.2869288" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32837406" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946696" weight="0.3006536" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.7332625" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49946865" visible="true" weight="0.18489583" />
       <window_info anchor="right" id="Bean Validation" order="8" />
       <window_info id="Learn" order="6" weight="0.3296875" />
@@ -1109,7 +905,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/bot/VampusBot.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-19">
-          <caret line="133" column="41" lean-forward="true" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
+          <caret line="133" column="41" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="initializer##0;class#VampusBot#0" />
@@ -1138,7 +934,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/map/player/Player.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
-          <caret line="137" column="39" lean-forward="true" selection-start-line="137" selection-start-column="39" selection-end-line="137" selection-end-column="39" />
+          <caret line="137" column="39" selection-start-line="137" selection-start-column="39" selection-end-line="137" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#Player#0;class#Player#0" />
@@ -1160,14 +956,14 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-243">
-          <caret line="23" column="14" lean-forward="true" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
+          <caret line="23" column="14" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="461">
-          <caret line="85" lean-forward="true" selection-start-line="85" selection-end-line="85" />
+        <state relative-caret-position="64">
+          <caret line="84" column="1" selection-start-line="84" selection-start-column="1" selection-end-line="84" selection-end-column="1" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
