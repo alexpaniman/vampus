@@ -1,5 +1,7 @@
 package map.content.chest.items;
 
-public class Crossbow extends Item {
+import java.io.Serializable;
+
+public class Crossbow implements Serializable {
 
 }

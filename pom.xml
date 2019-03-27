@@ -15,6 +15,7 @@
                     <configuration>
                         <source>8</source>
                         <target>8</target>
+                        <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -25,8 +26,8 @@
                         <assembleDirectory>target</assembleDirectory>
                         <programs>
                             <program>
-                                <mainClass>Bot</mainClass>
-                                <name>Bot</name>
+                                <mainClass>bot.VampusBot</mainClass>
+                                <name>VampusBot</name>
                             </program>
                         </programs>
                     </configuration>

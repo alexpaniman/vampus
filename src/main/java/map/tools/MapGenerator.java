@@ -1,15 +1,17 @@
 package map.tools;
 
 import map.cell.Cell;
-import map.content.*;
 import map.content.chest.Chest;
 import map.content.Content;
+import map.content.deadly.Hole;
+import map.content.deadly.Vampus;
 import map.content.portal.Portal;
 import map.player.Player;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -27,47 +29,11 @@ public class MapGenerator {
     private int min_height;
     private int max_weight;
     private int max_height;
+    private int player_hp;
     private double vampus;
     private double portal;
     private double chest;
     private double hole;
-
-    public static void main(String[] args) {
-        Player player = new MapGenerator(123).generateMap(1234567890).player(0);
-
-        Scanner scan = new Scanner(System.in);
-
-        System.out.println(player.draw() + "\n");
-
-        while (true) {
-            String str = scan.next();
-            switch (str) {
-                case "e":
-                    return;
-                case "a":
-                    if (!player.left())
-                        System.out.println("Выход за пределы!\n");
-                    break;
-                case "d":
-                    if (!player.right())
-                        System.out.println("Выход за пределы!\n");
-                    break;
-                case "w":
-                    if (!player.up())
-                        System.out.println("Выход за пределы!\n");
-                    break;
-                case "s":
-                    if (!player.down())
-                        System.out.println("Выход за пределы!\n");
-                    break;
-                case "t":
-                    if (player.position().content() != null && player.position().content().getClass() == Portal.class && ((Portal) (player.position().content())).getDest() != null)
-                        ((Portal) player.position().content()).teleport(player);
-            }
-            System.out.println(player.draw(true) + "\n");
-            System.out.println(player.position().content() + "\n");
-        }
-    }
 
     public MapGenerator(long seed) {
         this.random = new Random(seed);
@@ -81,6 +47,7 @@ public class MapGenerator {
             this.max_weight = Integer.parseInt(prop.getProperty("game.max.level.weight"));
             this.min_height = Integer.parseInt(prop.getProperty("game.min.level.height"));
             this.min_weight = Integer.parseInt(prop.getProperty("game.min.level.weight"));
+            this.player_hp = Integer.parseInt(prop.getProperty("game.player_hp"));
             this.vampus = Double.parseDouble(prop.getProperty("game.per_cell.vampus"));
             this.portal = Double.parseDouble(prop.getProperty("game.per_cell.portal"));
             this.chest = Double.parseDouble(prop.getProperty("game.per_cell.chest"));
@@ -90,11 +57,15 @@ public class MapGenerator {
         }
     }
 
+    public MapGenerator() {
+        this(System.currentTimeMillis());
+    }
+
     private int random(int min, int max) {
         return (int) Math.floor(random.nextDouble() * (max - min + 1) + min);
     }
 
-    private <T extends Content> List<Cell> fill(List<Cell> empty, Supplier<T> supp, int count) {
+    private <T extends Content> List<Cell> fill(BiFunction<Cell, Cell, Boolean> setFunc, List<Cell> empty, Supplier<T> supp, int count) {
         List<Cell> content_cells_list = new ArrayList<>();
         List<Cell> settable = new ArrayList<>(empty);
         for (int i = 0; i < count; i++) {
@@ -102,7 +73,7 @@ public class MapGenerator {
             if (settable.size() == 0)
                 return content_cells_list;
             Cell cell = settable.get(random.nextInt(settable.size()));
-            settable.removeIf(current -> content.notSettable().apply(cell, current) || current == cell);
+            settable.removeIf(current -> setFunc.apply(cell, current) || current == cell);
             empty.remove(cell);
             cell.setContent(content);
             content_cells_list.add(cell);
@@ -123,14 +94,12 @@ public class MapGenerator {
                     .thisLevel()
                     .emptyItem()
                     .emptyCoordinates()
-                    .noOneWas()
                     .build();
             map[0][0] = level_main;
             for (Cell[] row : map)
                 for (int i = 0; i < row.length; i++)
                     if (row[i] == null)
                         row[i] = Cell.newBuilder()
-                                .noOneWas()
                                 .emptyCoordinates()
                                 .setLevel(level_main)
                                 .emptyItem()
@@ -161,11 +130,14 @@ public class MapGenerator {
 
             portal_count = portal_count >= 2 ? portal_count : 2;
 
-            fill(empty, () -> new VampusInHole(), vampus_in_hole);
-            fill(empty, () -> new Vampus(), vampus_count);
-            fill(empty, () -> new Hole(), hole_count);
-            fill(empty, () -> new Chest(), chest_count);
-            List<Cell> portals = fill(empty, () -> new Portal(), portal_count);
+            BiFunction<Cell, Cell, Boolean> aroundEmpty = (cell, current) -> current.aroundAnyEquals(cell);
+            BiFunction<Cell, Cell, Boolean> anyPosition = (cell, current) -> false;
+
+            fill(aroundEmpty, empty, Vampus::new, vampus_in_hole);
+            fill(aroundEmpty, empty, Vampus::new, vampus_count);
+            fill(aroundEmpty, empty, Hole::new, hole_count);
+            fill(anyPosition, empty, Chest::new, chest_count);
+            List<Cell> portals = fill(anyPosition, empty, Portal::new, portal_count);
 
             if (portal_to_link == null)
                 portal_to_link = portals.remove(random.nextInt(portals.size()));
@@ -198,7 +170,7 @@ public class MapGenerator {
 
         Player[] players = new Player[id.length];
         for (int i = 0; i < id.length; i++)
-            players[i] = new Player(empty_list.remove(random.nextInt(empty_list.size())), id[i]);
+            players[i] = new Player(empty_list.remove(random.nextInt(empty_list.size())), id[i], player_hp);
 
         return new Map(levels, players);
     }

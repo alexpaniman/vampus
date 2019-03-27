@@ -299,6 +299,16 @@ public class CommandInterpreter {
         return new Pair<>(key, value);
     }
 
+    @TelescriptFunction(name = "not")
+    public Boolean not(Boolean condition) {
+        return !condition;
+    }
+
+    @TelescriptFunction(name = "number")
+    public Boolean number(String text) {
+        return text.matches("^\\d+$");
+    }
+
     @TelescriptFunction(name = "cast")
     public Object cast(Object obj, String cast_to) throws InterpretationException {
         if (cast_to.equalsIgnoreCase("long")) {

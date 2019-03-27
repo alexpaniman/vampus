@@ -1,5 +1,7 @@
 package map.content.chest.items;
 
-public class Rifle extends Item {
+import java.io.Serializable;
+
+public class Rifle implements Serializable {
 
 }
