@@ -1,7 +1,6 @@
 package map.content.chest.items;
 
 import bot.VampusBot;
-import javafx.util.Pair;
 import map.State;
 import map.cell.Cell;
 import map.content.chest.Item;
@@ -11,13 +10,11 @@ import map.content.deadly.VampusInHole;
 import map.player.Player;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Bow extends Item {
 
-    private static Logger logger = Logger.getLogger(Bomb.class);
+    private final static Logger logger = Logger.getLogger(Bow.class);
 
     public Bow() {
         super(
@@ -25,16 +22,11 @@ public class Bow extends Item {
                 "Этот предмет стреляет в заданном направлении. " +
                         "Если он попадёт в вампуса, то убьёт его."
         );
-        super.drawProperty = new HashMap();
     }
 
     @Override
     public void defaultState(Player player) {
-        List<Pair<String, String>> items = new ArrayList<>();
-        for (int index = 0; index < player.items().size(); index++)
-            items.add(new Pair<>(player.items().get(index).icon(), "activate " + index));
-        for (int i = 0; i < 10 - items.size(); i++)
-            items.add(new Pair<>("∅", "∅"));
+        super.drawProperty = new HashMap<>();
         super.state = new State(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "→:item →")
@@ -62,24 +54,16 @@ public class Bow extends Item {
                 return;
         }
         logger.debug("Bow shot!");
-        if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
+        if (!cell.empty() && cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
             bot.edit(new State("Вы убили вампуса!"), player.id(), player.gameInstance());
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException exc) {
-                exc.printStackTrace();
-            }
+            bot.sleep(5);
             cell.deleteContent();
             if (cell.content().getClass() == Vampus.class)
                 cell.setContent(new Hole());
             logger.info("Hitting vampus from bow!");
         }
         bot.edit(new State("Вы промахнулись!"), player.id(), player.gameInstance());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException exc) {
-            exc.printStackTrace();
-        }
+        bot.sleep(5);
         player.deleteItem(this);
     }
 }
