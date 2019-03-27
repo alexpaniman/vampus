@@ -1,10 +1,19 @@
 package map.content;
 
-import map.cell.Cell;
+import bot.VampusBot;
+import map.State;
+import map.player.Player;
 
 import java.io.Serializable;
-import java.util.function.BiFunction;
 
 public interface Content extends Serializable {
-    BiFunction<Cell, Cell, Boolean> notSettable();
+    default void changeState(VampusBot bot, Player player, String command) {}
+
+    default void enter(VampusBot bot, Player player) {}
+
+    default State state() {
+        return null;
+    }
+
+    String icon();
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "WeakerAccess"})
 public class Cell implements Serializable {
-    private Set<Long> users;
+    private Set<Player> players;
     private Content content;
     private Cell level;
     private Cell right;
@@ -27,8 +27,9 @@ public class Cell implements Serializable {
         return new Cell().new CellBuilder();
     }
 
-    public boolean addUser(Player player) {
-        return this.addUser(player.id());
+    public boolean addPlayer(Player player) {
+
+        return this.players.add(player);
     }
 
     public class CellBuilder {
@@ -65,22 +66,6 @@ public class Cell implements Serializable {
             return this.setLevel(Cell.this);
         }
 
-        public CellBuilder nullDown() {
-            return this.setDown(null);
-        }
-
-        public CellBuilder nullUp() {
-            return this.setUp(null);
-        }
-
-        public CellBuilder nullLeft() {
-            return this.setLeft(null);
-        }
-
-        public CellBuilder nullRight() {
-            return this.setRight(null);
-        }
-
         public CellBuilder emptyItem() {
             Cell.this.content = null;
             return this;
@@ -91,22 +76,17 @@ public class Cell implements Serializable {
             return this;
         }
 
-        public CellBuilder noOneWas() {
-            return this.setWhoWas(new HashSet<>());
-        }
-
         public CellBuilder emptyCoordinates() {
-            return this.nullUp().nullDown().nullLeft().nullRight();
-        }
-
-        public CellBuilder setWhoWas(Set<Long> users) {
-            Cell.this.users = users;
+            Cell.this.up = null;
+            Cell.this.down = null;
+            Cell.this.right = null;
+            Cell.this.left = null;
             return this;
         }
 
         public Cell build() {
             checkArgument(Cell.this.level != null);
-            checkArgument(Cell.this.users != null);
+            Cell.this.players = new HashSet<>();
             return Cell.this;
         }
     }
@@ -148,7 +128,8 @@ public class Cell implements Serializable {
     }
 
     public Content content() {
-        assert content != null;
+        if (content == null)
+            return null;
         return content;
     }
 
@@ -166,6 +147,11 @@ public class Cell implements Serializable {
         return this;
     }
 
+    public Cell setLeft(Cell left) {
+        this.left = left;
+        return this;
+    }
+
     public Cell setDown(Cell down) {
         this.down = down;
         return this;
@@ -176,17 +162,8 @@ public class Cell implements Serializable {
         return this;
     }
 
-    public Cell setLeft(Cell left) {
-        this.left = left;
-        return this;
-    }
-
-    public boolean contains(long user) {
-        return this.users.contains(user);
-    }
-
-    public boolean addUser(long user) {
-        return this.users.add(user);
+    public boolean contains(Player player) {
+        return players.contains(player);
     }
 
     public boolean empty() {
@@ -202,5 +179,11 @@ public class Cell implements Serializable {
                 || downRight() == cell
                 || upLeft()    == cell
                 || upRight()   == cell;
+    }
+
+    public String icon() {
+        if(empty())
+            return "⬜";
+        return content().icon();
     }
 }
