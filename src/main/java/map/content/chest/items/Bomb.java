@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public class Bomb extends Item {
 
-    private static Logger logger = Logger.getLogger(Bomb.class);
+    private static final Logger logger = Logger.getLogger(Bomb.class);
 
     private Cell target;
 
@@ -37,11 +37,6 @@ public class Bomb extends Item {
                 put(target, "❌");
             }
         };
-        List<Pair<String, String>> items = new ArrayList<>();
-        for (int index = 0; index < player.items().size(); index++)
-            items.add(new Pair<>(player.items().get(index).icon(), "activate " + index));
-        for (int i = 0; i < 10 - items.size(); i++)
-            items.add(new Pair<>("∅", "∅"));
         super.state = new State(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "\uD83D\uDCA3:item explode", "→:item →")
@@ -120,7 +115,7 @@ public class Bomb extends Item {
         int rad = Integer.parseInt(radius);
 
         if (Math.random() < (rad * 15) / 100) {
-            player.kill();
+            player.kill(bot);
             return;
         }
 
