@@ -1,8 +1,7 @@
 package map.content.chest.items;
 
 import bot.VampusBot;
-import javafx.util.Pair;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.deadly.Hole;
 import map.content.deadly.Vampus;
@@ -17,7 +16,7 @@ import java.util.stream.Stream;
 
 public class Bomb extends Item {
 
-    private static Logger logger = Logger.getLogger(Bomb.class);
+    private static final Logger logger = Logger.getLogger(Bomb.class);
 
     private Cell target;
 
@@ -37,12 +36,7 @@ public class Bomb extends Item {
                 put(target, "❌");
             }
         };
-        List<Pair<String, String>> items = new ArrayList<>();
-        for (int index = 0; index < player.items().size(); index++)
-            items.add(new Pair<>(player.items().get(index).icon(), "activate " + index));
-        for (int i = 0; i < 10 - items.size(); i++)
-            items.add(new Pair<>("∅", "∅"));
-        super.state = new State(description())
+        super.message = new Message(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "\uD83D\uDCA3:item explode", "→:item →")
                 .addRow("↓:item ↓")
@@ -89,7 +83,7 @@ public class Bomb extends Item {
                 };
                 break;
             case "explode":
-                super.state = new State("Выбирите радиус взрыва")
+                super.message = new Message("Выбирите радиус взрыва")
                         .addRow("1 - 15%:item 1")
                         .addRow("2 - 30%:item 2")
                         .addRow("3 - 45%:item 3")
@@ -120,7 +114,7 @@ public class Bomb extends Item {
         int rad = Integer.parseInt(radius);
 
         if (Math.random() < (rad * 15) / 100) {
-            player.kill();
+            player.kill(bot);
             return;
         }
 

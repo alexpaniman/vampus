@@ -1,7 +1,7 @@
 package map.content.chest;
 
 import bot.VampusBot;
-import map.State;
+import map.Message;
 import map.player.Player;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ public abstract class Item implements Serializable {
     private String icon;
     private String description;
 
-    protected State state;
+    protected Message message;
     protected Map drawProperty;
 
     public Item(String icon, String description) {
@@ -27,8 +27,8 @@ public abstract class Item implements Serializable {
         return icon;
     }
 
-    public State state() {
-        return state;
+    public Message state() {
+        return message;
     }
 
     public Map drawProperty() {

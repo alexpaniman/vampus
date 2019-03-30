@@ -5,6 +5,7 @@ import map.cell.Cell;
 import map.player.Player;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 public class Map implements Serializable {
@@ -21,6 +22,13 @@ public class Map implements Serializable {
 
     public Player player(int ind) {
         return players[ind];
+    }
+
+    public void removePlayer(int id) {
+        players = Arrays
+                .stream(players)
+                .filter(player -> player.id() != id)
+                .toArray(Player[]::new);
     }
 
     public Player[] players() {
