@@ -1,7 +1,7 @@
 package map.content.chest.items;
 
 import bot.VampusBot;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.chest.Item;
 import map.content.deadly.Hole;
@@ -11,9 +11,6 @@ import map.player.Player;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.function.BinaryOperator;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class Rifle extends Item {
@@ -29,7 +26,7 @@ public class Rifle extends Item {
     @Override
     public void defaultState(Player player) {
         super.drawProperty = new HashMap<>();
-        super.state = new State(description())
+        super.message = new Message(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "→:item →")
                 .addRow("↓:item ↓")
@@ -39,18 +36,23 @@ public class Rifle extends Item {
     @Override
     public void changeState(VampusBot bot, Player player, String command) {
         UnaryOperator<Cell> operator;
+        String arrow;
         switch (command) {
             case "↑":
                 operator = Cell::up;
+                arrow = "⬆";
                 break;
             case "←":
                 operator = Cell::left;
+                arrow = "⬅️";
                 break;
             case "→":
                 operator = Cell::right;
+                arrow = "➡";
                 break;
             case "↓":
                 operator = Cell::down;
+                arrow = "⬇";
                 break;
             default:
                 return;
@@ -59,13 +61,13 @@ public class Rifle extends Item {
         while ((cell = operator.apply(cell)) != null) {
             final Cell finalCell = cell;
             super.drawProperty = new HashMap<Cell, String>() {{
-                put(finalCell, "❌");
+                put(finalCell, arrow);
             }};
             player.instance(bot);
             bot.sleep(1);
-            if (!cell.empty())
+            if (!cell.empty()) {
                 if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
-                    bot.edit(new State("Попадание в вампуса!"), player.id(), player.gameInstance());
+                    bot.edit(new Message("Попадание в вампуса!"), player.id(), player.gameInstance());
                     bot.sleep(5);
                     if (cell.content().getClass() == Vampus.class)
                         cell.deleteContent();
@@ -75,6 +77,10 @@ public class Rifle extends Item {
                     }
                     break;
                 }
+            } else {
+                super.drawProperty = new HashMap<>();
+            }
         }
+        player.deleteItem(this);
     }
 }

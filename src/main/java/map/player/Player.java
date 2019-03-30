@@ -1,8 +1,9 @@
 package map.player;
 
 import bot.VampusBot;
+import javafx.application.Platform;
 import javafx.util.Pair;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.Content;
 import map.content.deadly.Hole;
@@ -12,8 +13,6 @@ import map.content.chest.Chest;
 import map.content.chest.Item;
 import map.content.portal.Portal;
 import org.apache.log4j.Logger;
-import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -36,6 +35,7 @@ public class Player implements Serializable {
         this.hp = hp;
         this.id = id;
         this.pos = pos;
+        this.game_inst = 0;
         this.items = new ArrayList<>();
         this.drawProperty = new HashMap<>();
         pos.addPlayer(this);
@@ -60,31 +60,31 @@ public class Player implements Serializable {
         hp -= damage;
         if (hp > 0) {
             bot.edit(
-                    new State(
+                    new Message(
                             "Вы потеряли 1 хп, теперь у вас: " +
-                            hp +
-                            ". Вы вернулись на предыдущую клетку!"
+                                    hp +
+                                    ". Вы вернулись на предыдущую клетку!"
                     ),
                     id,
                     game_inst
             );
             bot.sleep(5);
         } else {
-            bot.edit(new State("Вас убили! Игра завершена."), id, game_inst);
-            game_inst = -1;
+            bot.edit(new Message("Вас убили! Игра завершена."), id, game_inst);
+            game_inst = 0;
         }
     }
 
     public void kill(VampusBot bot) {
         hp = 0;
-        bot.edit(new State("Вас убили! Игра завершена."), id, game_inst);
+        bot.edit(new Message("Вас убили! Игра завершена."), id, game_inst);
         bot.sleep(5);
         removeInstance(bot);
-        game_inst = -1;
+        game_inst = 0;
     }
 
     public void removeInstance(VampusBot bot) {
-        if (game_inst != -1)
+        if (game_inst != 0)
             bot.delete(id, game_inst);
     }
 
@@ -96,32 +96,108 @@ public class Player implements Serializable {
         return pos;
     }
 
-    public Player deleteContent() {
-        return this.setContent(null);
-    }
-
     public void activate(Item item) {
         this.active = item;
         if (item != null)
             this.active.defaultState(this);
     }
 
-    public Player setPos(Cell pos) {
+    public void setPos(Cell pos) {
         this.pos.addPlayer(this);
         this.pos = pos;
-        return this;
     }
 
-    public Player add(Item item) {
+    public boolean addItem(VampusBot bot, Item item) {
+        if (items.size() == 5) {
+            message(bot, "Ваш инвентарь переполнен!", 5);
+            return false;
+        }
         items.add(item);
-        return this;
+        return true;
     }
 
-    public Player setContent(Content content) {
-        pos.setContent(content);
-        return this;
+    public void message(VampusBot bot, final String text, final double showSeconds) {
+        new Thread(() -> {
+            bot.edit(
+                    new Message(text),
+                    id,
+                    game_inst
+            );
+            try {
+                Thread.sleep((long) (showSeconds * 1000));
+            } catch (InterruptedException exc) {
+                logger.error("Thread interrupted: ", exc);
+            }
+            bot.sleep(5);
+            instance(bot);
+        }).start();
     }
 
+    //*******Creating game instances using vampusBot*******
+    private Message appendControls(Message message) {
+        List<Pair<String, String>> items = new ArrayList<>();
+        for (int index = 0; index < this.items.size(); index++)
+            items.add(new Pair<>(this.items.get(index).icon(), "activate " + index));
+        while (items.size() < 5)
+            items.add(new Pair<>("∅", "∅"));
+        return message.addRow(items).addRow("↑").addRow("←", "→").addRow("↓");
+    }
+
+    private void instance(VampusBot vb, Message message, boolean new_instance) {
+        if (new_instance)
+            this.game_inst = vb.send(message, id);
+        else
+            vb.edit(message, id, game_inst);
+    }
+
+    private void instance(VampusBot vb, boolean new_instance, boolean debug) {
+        if (active != null) {
+            Message message = active.state().clone();
+            instance(
+                    vb,
+                    message.setMessage(
+                            draw(
+                                    debug,
+                                    active.drawProperty(),
+                                    message.message()
+                            )
+                    ),
+                    new_instance
+            );
+        } else if (pos.empty())
+            instance(vb, appendControls(new Message(draw())), new_instance);
+        else {
+            Message message = pos.content().state() == null ? null : appendControls(pos.content().state().clone());
+            if (message == null)
+                instance(vb, appendControls(new Message(draw())), new_instance);
+            else
+                instance(
+                        vb,
+                        message.setMessage(
+                                draw(
+                                        false,
+                                        new HashMap(),
+                                        message.message()
+                                )
+                        ),
+                        new_instance
+                );
+        }
+    }
+
+    public void instance(VampusBot bot) {
+        instance(bot, false, false);
+    }
+
+    public void newInstance(VampusBot bot) {
+        if (game_inst != 0)
+            bot.delete(id, game_inst);
+        instance(bot, true, false);
+    }
+    //*****************************************************
+
+
+    //************Executing action from command************
     public boolean enter(VampusBot bot, UnaryOperator<Cell> unaryCell) {
         Cell next = unaryCell.apply(pos);
         if (next == null)
@@ -135,71 +211,8 @@ public class Player implements Serializable {
         return true;
     }
 
-    public List<Item> items() {
-        return items;
-    }
-
-    private List<Pair<String, String>> itemsMap() {
-        List<Pair<String, String>> items = new ArrayList<>();
-        for (int index = 0; index < this.items.size(); index++)
-            items.add(new Pair<>(this.items.get(index).icon(), "activate " + index));
-        while (items.size() < 5)
-            items.add(new Pair<>("∅", "∅"));
-        return items;
-    }
-
-    private State appendControls(State state) {
-        return state.addRow(itemsMap()).addRow("↑").addRow("←", "→").addRow("↓");
-    }
-
-    private void instance(VampusBot vb, State state, boolean new_instance) {
-        if (new_instance)
-            this.game_inst = vb.send(state, id);
-        else
-            vb.edit(state, id, game_inst);
-    }
-
-    private void instance(VampusBot vb, boolean new_instance, boolean debug) {
-        if (active != null) {
-            State state = active.state().clone();
-            instance(
-                    vb,
-                    state.setMessage(
-                            draw(
-                                    debug,
-                                    active.drawProperty(),
-                                    state.message()
-                            )
-                    ),
-                    new_instance
-            );
-        } else if (pos.empty())
-            instance(vb, appendControls(new State(draw())), new_instance);
-        else {
-            State state = pos.content().state() == null ? null : appendControls(pos.content().state().clone());
-            if (state == null)
-                instance(vb, appendControls(new State(draw())), new_instance);
-            else
-                instance(
-                        vb,
-                        state.setMessage(
-                                draw(
-                                        false,
-                                        new HashMap(),
-                                        state.message()
-                                )
-                        ),
-                        new_instance
-                );
-        }
-    }
-
-    public void instance(VampusBot bot) {
-        instance(bot, false, false);
-    }
-
     public void action(VampusBot bot, String action) {
-        if (game_inst == -1)
+        if (game_inst == 0)
             return;
         logger.debug("Execute action: '" + action + "'");
         try {
@@ -260,7 +273,10 @@ public class Player implements Serializable {
             logger.error("Exception occurred when executing action", exc);
         }
     }
+    //*****************************************************
 
+
+    //***********************Drawing***********************
     private String feelingsFrom(Player player, Cell thisCell) {
         if (!thisCell.contains(player))
             return "⬛";
@@ -374,14 +390,11 @@ public class Player implements Serializable {
                     row.append("\uD83D\uDC64");
                     continue;
                 }
-                Object drawProperty = this.drawProperty.get(rowCell);
-                if (drawProperty != null) {
-                    row.append(drawProperty);
-                    continue;
-                }
-                Object cellDraw = drawPolicy.get(rowCell);
-                if (cellDraw != null)
-                    row.append(cellDraw);
+                Object image;
+                if ((image = drawPolicy.get(rowCell)) != null)
+                    row.append(image);
+                else if ((image = drawProperty.get(row)) != null)
+                    row.append(image);
                 else if (debug)
                     row.append(debugFrom(this, rowCell));
                 else
@@ -422,10 +435,12 @@ public class Player implements Serializable {
                     .append("\n")
                     .append(message)
                     .append("\n");
+        mainBuilder.append("\n♥: ").append(hp);
         return mainBuilder.toString();
     }
 
     public String draw() {
         return draw(false, new HashMap<>(), null);
     }
+    //*****************************************************
 }

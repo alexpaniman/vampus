@@ -1,8 +1,7 @@
 package map.content.chest.items;
 
 import bot.VampusBot;
-import javafx.util.Pair;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.deadly.Hole;
 import map.content.deadly.Vampus;
@@ -37,7 +36,7 @@ public class Bomb extends Item {
                 put(target, "❌");
             }
         };
-        super.state = new State(description())
+        super.message = new Message(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "\uD83D\uDCA3:item explode", "→:item →")
                 .addRow("↓:item ↓")
@@ -84,7 +83,7 @@ public class Bomb extends Item {
                 };
                 break;
             case "explode":
-                super.state = new State("Выбирите радиус взрыва")
+                super.message = new Message("Выбирите радиус взрыва")
                         .addRow("1 - 15%:item 1")
                         .addRow("2 - 30%:item 2")
                         .addRow("3 - 45%:item 3")
