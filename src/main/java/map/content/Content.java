@@ -1,7 +1,7 @@
 package map.content;
 
 import bot.VampusBot;
-import map.State;
+import map.Message;
 import map.player.Player;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ public interface Content extends Serializable {
         return true;
     }
 
-    default State state() {
+    default Message state() {
         return null;
     }
 

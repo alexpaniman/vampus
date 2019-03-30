@@ -1,7 +1,7 @@
 package map.content.chest.items;
 
 import bot.VampusBot;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.chest.Item;
 import map.content.deadly.Hole;
@@ -27,7 +27,7 @@ public class Bow extends Item {
     @Override
     public void defaultState(Player player) {
         super.drawProperty = new HashMap<>();
-        super.state = new State(description())
+        super.message = new Message(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "→:item →")
                 .addRow("↓:item ↓")
@@ -55,14 +55,14 @@ public class Bow extends Item {
         }
         logger.debug("Bow shot!");
         if (!cell.empty() && cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
-            bot.edit(new State("Вы убили вампуса!"), player.id(), player.gameInstance());
+            bot.edit(new Message("Вы убили вампуса!"), player.id(), player.gameInstance());
             bot.sleep(5);
             cell.deleteContent();
             if (cell.content().getClass() == Vampus.class)
                 cell.setContent(new Hole());
             logger.info("Hitting vampus from bow!");
         }
-        bot.edit(new State("Вы промахнулись!"), player.id(), player.gameInstance());
+        bot.edit(new Message("Вы промахнулись!"), player.id(), player.gameInstance());
         bot.sleep(5);
         player.deleteItem(this);
     }
