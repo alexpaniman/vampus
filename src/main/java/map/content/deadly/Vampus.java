@@ -6,8 +6,9 @@ import map.player.Player;
 
 public class Vampus implements Content {
     @Override
-    public void enter(VampusBot bot, Player player) {
-        player.kill();
+    public boolean enter(VampusBot bot, Player player) {
+        player.hit(bot, 1);
+        return false;
     }
 
     @Override

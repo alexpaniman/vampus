@@ -1,7 +1,7 @@
 package map.content.portal;
 
 import bot.VampusBot;
-import map.State;
+import map.Message;
 import map.cell.Cell;
 import map.content.Content;
 import map.player.Player;
@@ -9,7 +9,7 @@ import map.player.Player;
 public class Portal implements Content {
     private Cell dest;
 
-    public void teleport(Player player) {
+    private void teleport(Player player) {
         player.setPos(dest);
     }
 
@@ -27,8 +27,8 @@ public class Portal implements Content {
     }
 
     @Override
-    public State state() {
-        return new State("Вы находитесь рядом с порталом!").addRow("Зайти в портал:content teleport");
+    public Message state() {
+        return new Message("Вы находитесь рядом с порталом!").addRow("Зайти в портал:content teleport");
     }
 
     @Override
