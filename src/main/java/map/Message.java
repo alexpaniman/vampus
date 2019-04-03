@@ -1,8 +1,6 @@
 package map;
 
 import com.google.common.base.MoreObjects;
-import javafx.util.Pair;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
