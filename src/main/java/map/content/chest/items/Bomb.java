@@ -11,11 +11,11 @@ import map.player.Player;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class Bomb extends Item {
-
     private static final Logger logger = Logger.getLogger(Bomb.class);
 
     private Cell target;
@@ -23,19 +23,17 @@ public class Bomb extends Item {
     public Bomb() {
         super(
                 "\uD83D\uDCA3",
-                "Этот предмет уничтожает всех вамсусов и ямы в радиусе, который вы выбираете сами. " +
-                        "Бомба может убить вас, чем выше радиус - тем больше шанс."
+                "Это бомба, она уничтожает всех вамсусов и ямы в радиусе, который вы выбираете сами.\n" +
+                        "Бомба может убить вас, чем выше радиус - тем меньше у вас шанс выжить."
         );
     }
 
     @Override
     public void defaultState(Player player) {
         this.target = player.position().level();
-        super.drawProperty = new HashMap<Cell, String>() {
-            {
-                put(target, "❌");
-            }
-        };
+        super.drawProperty = new HashMap<Cell, String>() {{
+            put(target, "❌");
+        }};
         super.message = new Message(description())
                 .addRow("↑:item ↑")
                 .addRow("←:item ←", "\uD83D\uDCA3:item explode", "→:item →")
@@ -49,41 +47,33 @@ public class Bomb extends Item {
             case "↑":
                 if (target.up() != null)
                     target = target.up();
-                super.drawProperty = new HashMap<Cell, String>() {
-                    {
-                        put(target, "❌");
-                    }
-                };
+                super.drawProperty = new HashMap<Cell, String>() {{
+                    put(target, "❌");
+                }};
                 break;
             case "←":
                 if (target.left() != null)
                     target = target.left();
-                super.drawProperty = new HashMap<Cell, String>() {
-                    {
-                        put(target, "❌");
-                    }
-                };
+                super.drawProperty = new HashMap<Cell, String>() {{
+                    put(target, "❌");
+                }};
                 break;
             case "→":
                 if (target.right() != null)
                     target = target.right();
-                super.drawProperty = new HashMap<Cell, String>() {
-                    {
-                        put(target, "❌");
-                    }
-                };
+                super.drawProperty = new HashMap<Cell, String>() {{
+                    put(target, "❌");
+                }};
                 break;
             case "↓":
                 if (target.down() != null)
                     target = target.down();
-                super.drawProperty = new HashMap<Cell, String>() {
-                    {
-                        put(target, "❌");
-                    }
-                };
+                super.drawProperty = new HashMap<Cell, String>() {{
+                    put(target, "❌");
+                }};
                 break;
             case "explode":
-                super.message = new Message("Выбирите радиус взрыва")
+                super.message = new Message("Выберите радиус взрыва")
                         .addRow("1 - 15%:item 1")
                         .addRow("2 - 30%:item 2")
                         .addRow("3 - 45%:item 3")
@@ -113,7 +103,9 @@ public class Bomb extends Item {
     private void explode(VampusBot bot, Player player, Cell pos, String radius) {
         int rad = Integer.parseInt(radius);
 
-        if (Math.random() < (rad * 15) / 100) {
+        double random = Math.random();
+        double target = rad * 15d / 100d;
+        if (random < target) {
             player.kill(bot);
             return;
         }
@@ -143,7 +135,7 @@ public class Bomb extends Item {
                                 .anyMatch(c -> c == cell.content().getClass())
                         )
                     cell.deleteContent();
-            player.appendDrawProperty(new HashMap<Cell, String>() {{
+            player.addDrawProperty(new HashMap<Cell, String>() {{
                 put(cell, cell.icon());
             }});
             if (count % 5 == 0) {

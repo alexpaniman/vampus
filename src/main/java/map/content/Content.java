@@ -13,7 +13,7 @@ public interface Content extends Serializable {
         return true;
     }
 
-    default Message state() {
+    default Message message() {
         return null;
     }
 

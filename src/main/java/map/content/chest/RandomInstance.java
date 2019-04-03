@@ -18,8 +18,10 @@ public class RandomInstance<T> {
     public T instance(int... percents) {
         assert percents.length == suppliers.size();
         double rand = this.random.nextDouble();
+        double percent = 0;
         for (int i = 0; i < percents.length; i++) {
-            if (rand <= percents[i] / 100D)
+            percent += percents[i] / 100D;
+            if (rand <= percent)
                 return suppliers.get(i).get();
         }
         return null;

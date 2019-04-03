@@ -9,10 +9,6 @@ import map.player.Player;
 public class Portal implements Content {
     private Cell dest;
 
-    private void teleport(Player player) {
-        player.setPos(dest);
-    }
-
     public void setDest(Cell dest) {
         this.dest = dest;
     }
@@ -21,13 +17,13 @@ public class Portal implements Content {
     public void changeState(VampusBot bot, Player player, String command) {
         switch (command) {
             case "teleport":
-                teleport(player);
+                player.teleport(dest);
                 break;
         }
     }
 
     @Override
-    public Message state() {
+    public Message message() {
         return new Message("Вы находитесь рядом с порталом!").addRow("Зайти в портал:content teleport");
     }
 

@@ -16,20 +16,10 @@ public class Chest implements Content {
     private Item item;
 
     private Chest(Random random) {
-        item = new RandomInstance<>(random, Rifle::new).instance(100);
-        /*int rand = (int) Math.ceil(random.nextDouble() * 100);
-        if (rand <= 60)
-            item = new Bow();
-        else if (rand <= 80)
-            item = new Crossbow();
-        else if (rand <= 90)
-            item = new Rifle();
-        else if (rand <= 95)
-            item = new Bomb();
-        else if (rand <= 100)
-            item = new Teleport();*/
-
-        //item = new Bomb();
+        item = new RandomInstance<>(
+                random,
+                () -> null, Bow::new, Crossbow::new, Teleport::new, Rifle::new, Bomb::new
+        ).instance(10, 30, 25, 20, 10, 5);
     }
 
     public Chest() {
@@ -45,8 +35,11 @@ public class Chest implements Content {
     }
 
     @Override
-    public Message state() {
-        return new Message("В сундуке лежит " + item.icon()).addRow("Взять:content get");
+    public Message message() {
+        if (item == null)
+            return new Message("Пустой сундук");
+        else
+            return new Message("В сундуке лежит " + item.icon()).addRow("Взять:content get");
     }
 
     @Override

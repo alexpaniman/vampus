@@ -13,13 +13,12 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 
 public class Bow extends Item {
-
     private final static Logger logger = Logger.getLogger(Bow.class);
 
     public Bow() {
         super(
                 "\uD83C\uDFF9",
-                "Этот предмет стреляет в заданном направлении. " +
+                "Этот предмет стреляет в заданном направлении.\n" +
                         "Если он попадёт в вампуса, то убьёт его."
         );
     }
@@ -54,16 +53,15 @@ public class Bow extends Item {
                 return;
         }
         logger.debug("Bow shot!");
-        if (!cell.empty() && cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
-            bot.edit(new Message("Вы убили вампуса!"), player.id(), player.gameInstance());
-            bot.sleep(5);
-            cell.deleteContent();
-            if (cell.content().getClass() == Vampus.class)
-                cell.setContent(new Hole());
-            logger.info("Hitting vampus from bow!");
-        }
-        bot.edit(new Message("Вы промахнулись!"), player.id(), player.gameInstance());
-        bot.sleep(5);
+        if (!cell.empty())
+            if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
+                player.message(bot, "Вы убили вампуса!", 5);
+                cell.deleteContent();
+                if (cell.content().getClass() == Vampus.class)
+                    cell.setContent(new Hole());
+                logger.info("Hitting vampus from bow!");
+            }
+        player.message(bot, "Вы промахнулись!", 5);
         player.deleteItem(this);
     }
 }
