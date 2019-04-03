@@ -1,11 +1,9 @@
 package map.player;
 
 import bot.VampusBot;
-import javafx.application.Platform;
 import javafx.util.Pair;
 import map.Message;
 import map.cell.Cell;
-import map.content.Content;
 import map.content.deadly.Hole;
 import map.content.deadly.Vampus;
 import map.content.deadly.VampusInHole;
@@ -22,14 +20,20 @@ import java.util.stream.Stream;
 
 @SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "SameParameterValue", "unused"})
 public class Player implements Serializable {
-    private int hp;
-    private Cell pos;
-    private int game_inst;
+
     private final long id;
-    private Item active;
+    private int game_inst;
+    private int hp;
+
+    private Cell pos;
+
     private List<Item> items;
+    private Item active;
+
     private Map<Object, Object> drawProperty;
-    private static Logger logger = Logger.getLogger(Player.class);
+
+    private final static Logger logger = Logger.getLogger(Player.class);
+
 
     public Player(Cell pos, long id, int hp) {
         this.hp = hp;
@@ -42,69 +46,60 @@ public class Player implements Serializable {
         logger.info("New player(id = " + id + ") was be created");
     }
 
-    public void appendDrawProperty(Map<Cell, String> drawProperty) {
-        this.drawProperty.putAll(drawProperty);
-    }
 
-    public void deleteItem(Item item) {
-        items.remove(item);
-        if (active == item)
-            active = null;
-    }
-
+    //*******************Unique user id********************
     public long id() {
         return id;
     }
+    //*****************************************************
 
-    public void hit(VampusBot bot, int damage) {
+
+    //**********************Manage hp**********************
+    public void hit(VampusBot bot, String message, int damage) {
         hp -= damage;
-        if (hp > 0) {
-            bot.edit(
-                    new Message(
-                            "Вы потеряли 1 хп, теперь у вас: " +
-                                    hp +
-                                    ". Вы вернулись на предыдущую клетку!"
-                    ),
-                    id,
-                    game_inst
-            );
-            bot.sleep(5);
-        } else {
-            bot.edit(new Message("Вас убили! Игра завершена."), id, game_inst);
-            game_inst = 0;
-        }
+        if (hp > 0)
+            message(bot, message + " и вы потеряли " + damage + " хп, но вы успели вернуться на предыдущую клетку!", 5);
+        else kill(bot);
     }
 
     public void kill(VampusBot bot) {
         hp = 0;
         bot.edit(new Message("Вас убили! Игра завершена."), id, game_inst);
-        bot.sleep(5);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException exc) {
+            logger.error(exc);
+        }
         removeInstance(bot);
         game_inst = 0;
+        bot.leaveGame((int) id);
     }
+    //*****************************************************
 
-    public void removeInstance(VampusBot bot) {
-        if (game_inst != 0)
-            bot.delete(id, game_inst);
-    }
 
-    public int gameInstance() {
-        return game_inst;
-    }
-
+    //*******************Manage position*******************
     public Cell position() {
         return pos;
     }
 
+    public void teleport(Cell position) {
+        this.pos.addPlayer(this);
+        this.pos = position;
+    }
+    //*****************************************************
+
+
+    //********************Manage items*********************
     public void activate(Item item) {
         this.active = item;
         if (item != null)
             this.active.defaultState(this);
     }
 
-    public void setPos(Cell pos) {
-        this.pos.addPlayer(this);
-        this.pos = pos;
+    public void deleteItem(Item item) {
+        items.remove(item);
+        if (active == item)
+            active = null;
     }
 
     public boolean addItem(VampusBot bot, Item item) {
@@ -115,23 +110,8 @@ public class Player implements Serializable {
         items.add(item);
         return true;
     }
+    //*****************************************************
 
-    public void message(VampusBot bot, final String text, final double showSeconds) {
-        new Thread(() -> {
-            bot.edit(
-                    new Message(text),
-                    id,
-                    game_inst
-            );
-            try {
-                Thread.sleep((long) (showSeconds * 1000));
-            } catch (InterruptedException exc) {
-                logger.error("Thread interrupted: ", exc);
-            }
-            bot.sleep(5);
-            instance(bot);
-        }).start();
-    }
 
     //*******Creating game instances using vampusBot*******
     private Message appendControls(Message message) {
@@ -167,7 +147,7 @@ public class Player implements Serializable {
         } else if (pos.empty())
             instance(vb, appendControls(new Message(draw())), new_instance);
         else {
-            Message message = pos.content().state() == null ? null : appendControls(pos.content().state().clone());
+            Message message = pos.content().message() == null ? null : appendControls(pos.content().message().clone());
             if (message == null)
                 instance(vb, appendControls(new Message(draw())), new_instance);
             else
@@ -194,6 +174,21 @@ public class Player implements Serializable {
             bot.delete(id, game_inst);
         instance(bot, true, false);
     }
+
+    public void removeInstance(VampusBot bot) {
+        if (game_inst != 0)
+            bot.delete(id, game_inst);
+    }
+
+    public void message(VampusBot bot, String text, double showSeconds) {
+        bot.edit(new Message(text), id, game_inst);
+        try {
+            Thread.sleep((long) (showSeconds * 1000));
+        } catch (InterruptedException exc) {
+            logger.error(exc);
+        }
+        instance(bot);
+    }
     //*****************************************************
 
 
@@ -204,16 +199,14 @@ public class Player implements Serializable {
             return false;
         if (!next.empty()) {
             if (next.content().enter(bot, this))
-                setPos(next);
+                teleport(next);
         } else {
-            setPos(next);
+            teleport(next);
         }
         return true;
     }
 
     public void action(VampusBot bot, String action) {
-        if (game_inst == 0)
-            return;
         logger.debug("Execute action: '" + action + "'");
         try {
             switch (action) {
@@ -253,30 +246,34 @@ public class Player implements Serializable {
                             assert !pos.empty();
                             assert command.length == 2;
                             pos.content().changeState(bot, this, command[1]);
-                            instance(bot, false, false);
+                            instance(bot);
                             break;
                         case "item":
                             assert active != null;
                             assert command.length == 2;
                             active.changeState(bot, this, command[1]);
-                            instance(bot, false, false);
+                            instance(bot);
                             break;
                         case "activate":
                             assert command.length == 2;
                             activate(items.get(Integer.parseInt(command[1])));
-                            instance(bot, false, false);
+                            instance(bot);
                             break;
                     }
                     break;
             }
         } catch (Exception exc) {
-            logger.error("Exception occurred when executing action", exc);
+            logger.error(exc);
         }
     }
     //*****************************************************
 
 
     //***********************Drawing***********************
+    public void addDrawProperty(Map<Cell, String> drawProperty) {
+        this.drawProperty.putAll(drawProperty);
+    }
+
     private String feelingsFrom(Player player, Cell thisCell) {
         if (!thisCell.contains(player))
             return "⬛";
@@ -382,18 +379,25 @@ public class Player implements Serializable {
             leftList.add(leftCell);
         } while ((leftCell = leftCell.down()) != null);
         StringBuilder mainBuilder = new StringBuilder();
-        for (Cell l : leftList) {
+        for (Cell rowCell : leftList) {
             StringBuilder row = new StringBuilder();
-            Cell rowCell = l;
-            do {
+            loop: do {
                 if (position() == rowCell) {
                     row.append("\uD83D\uDC64");
                     continue;
                 }
+                /*TODO
+                for (Player player : rowCell.players()) {
+                    if (player.position() == rowCell) {
+                        row.append("\uD83D\uDC68\uD83C\uDFFB\u200D\uD83E\uDDB0");
+                        continue loop;
+                    }
+                }
+                */
                 Object image;
                 if ((image = drawPolicy.get(rowCell)) != null)
                     row.append(image);
-                else if ((image = drawProperty.get(row)) != null)
+                else if ((image = drawProperty.get(rowCell)) != null)
                     row.append(image);
                 else if (debug)
                     row.append(debugFrom(this, rowCell));

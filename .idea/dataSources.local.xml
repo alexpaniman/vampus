@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal">
-    <data-source name="vampus@localhost" uuid="4964b72d-4cd9-4d18-98f4-2a47b65198b8">
-      <database-info product="PostgreSQL" version="11.1" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.2">
+    <data-source name="d6bbo610cicmmt@ec2-50-17-231-192.compute-1.amazonaws.com" uuid="31ae1358-bf2a-4165-a0b5-2cedf243a7d2">
+      <database-info product="PostgreSQL" version="11.2 (Ubuntu 11.2-1.pgdg16.04+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.2">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
-      <user-name>postgres</user-name>
-      <introspection-schemas>vampus:public</introspection-schemas>
+      <user-name>gqtqrtnyrhmbpm</user-name>
+      <introspection-schemas>d6bbo610cicmmt:public</introspection-schemas>
     </data-source>
   </component>
 </project>

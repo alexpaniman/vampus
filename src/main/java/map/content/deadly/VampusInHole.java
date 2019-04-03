@@ -7,7 +7,7 @@ import map.player.Player;
 public class VampusInHole implements Content {
     @Override
     public boolean enter(VampusBot bot, Player player) {
-        player.hit(bot, 1);
+        player.hit(bot, "Вы упали в яму, но до того, как вы достигли дна вас схватил вампус", 2);
         return false;
     }
 

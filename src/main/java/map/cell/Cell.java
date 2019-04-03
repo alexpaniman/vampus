@@ -28,7 +28,6 @@ public class Cell implements Serializable {
     }
 
     public boolean addPlayer(Player player) {
-
         return this.players.add(player);
     }
 
@@ -177,6 +176,10 @@ public class Cell implements Serializable {
                 || downRight() == cell
                 || upLeft()    == cell
                 || upRight()   == cell;
+    }
+
+    public Set<Player> players() {
+        return players;
     }
 
     public String icon() {

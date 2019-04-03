@@ -27,7 +27,7 @@
                         <programs>
                             <program>
                                 <mainClass>bot.VampusBot</mainClass>
-                                <name>VampusBot</name>
+                                <name>Bot</name>
                             </program>
                         </programs>
                     </configuration>

@@ -1,5 +1,6 @@
 package bot;
 
+import com.google.common.base.Joiner;
 import javafx.util.Pair;
 import map.Map;
 import map.Message;
@@ -12,7 +13,6 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -27,7 +27,7 @@ import java.util.*;
 public class VampusBot extends TelegramLongPollingBot {
     private static Logger logger = Logger.getLogger(VampusBot.class);
     private Connection connection;
-    private PlayersCache pc = new PlayersCache(20);
+    private volatile PlayersCache pc;
 
     {
         try {
@@ -42,6 +42,7 @@ public class VampusBot extends TelegramLongPollingBot {
     private String username;
     private String token;
 
+    //***************create and register bot***************
     public static void main(String[] args) throws TelegramApiRequestException {
         ApiContextInitializer.init();
         TelegramBotsApi tba = new TelegramBotsApi();
@@ -55,84 +56,90 @@ public class VampusBot extends TelegramLongPollingBot {
     }
 
     private VampusBot(String username, String token) {
-        logger.info("Creating vampus bot with username = '" + username + "' and token = '" + token + "'");
         this.username = username;
         this.token = token;
-        long sleep = 60000;
+        logger.info("Creating vampus bot with username = '" + username + "' and token = '" + token + "'");
+
+        this.pc = new PlayersCache(20);
+
+        /*Cache loader timeout*/
+        final long millis = 60000;
+
+        //Starting cache loader
         Thread saver = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 uploadCache();
                 try {
-                    Thread.sleep(sleep);
+                    Thread.sleep(millis);
                 } catch (InterruptedException exc) {
-                    exc.printStackTrace();
+                    break;
                 }
             }
         });
-        saver.setDaemon(true);
         saver.setName("CacheSaver");
+        saver.setDaemon(true);
         saver.start();
-        logger.info("Start cache loader every " + sleep / 1000D + " seconds");
+
+        logger.info("Start cache loader every " + millis / 1000D + " seconds");
+    }
+    //*****************************************************
+
+
+    //****************Manage players cache*****************
+    private void createUser(int id) {
+        try {
+            connection
+                    .createStatement()
+                    .execute("INSERT INTO USERS(ID) VALUES(" + id + ")");
+            logger.debug("User with id = " + id + " was successful created");
+        } catch (SQLException exc) {
+            logger.error(exc);
+        }
     }
 
-    private Player findPlayer(int id) throws SQLException, IOException {
-        Player player = pc.find(id);
-        if (player == null) {
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT map_hash FROM users WHERE id = " + id);
-            if (!rs.next()) {
-                createUser(id);
-                return null;
-            }
-            String map_hash = rs.getString("map_hash");
-            if (map_hash == null)
-                return null;
-            rs = statement.executeQuery("SELECT serialized_map FROM maps WHERE map_hash = '" + map_hash + "'");
-            while (rs.next()) {
-                ObjectInputStream ooi = new ObjectInputStream(
-                        new ByteArrayInputStream(
-                                Base64.getDecoder().decode(
-                                        rs.getString("serialized_map")
-                                )
-                        )
-                );
-                try {
-                    map.Map map = (map.Map) ooi.readObject();
-                    pc.load(map);
-                } catch (ClassNotFoundException exc) {
+    private Player findPlayer(int id) {
+        try {
+            Player player = pc.find(id);
+            if (player == null) {
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT map_hash FROM users WHERE id = " + id);
+                if (!rs.next()) {
+                    createUser(id);
                     return null;
                 }
-
-            }
-            player = pc.find(id);
-            logger.debug("Successful downloading player from database");
-        } else
-            logger.debug("Successful uploading player from cache");
-        return player;
-    }
-
-    private void uploadCache() {
-        try {
-            logger.debug("Uploading cache(size = " + pc.maps().size() + ")");
-            for (map.Map map : pc.maps()) {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-                oos.writeObject(map);
-                int map_hash = map.hashCode();
-                String encoded = Base64
-                        .getEncoder()
-                        .encodeToString(outputStream.toByteArray());
-                connection.createStatement().execute(
-                        "UPDATE MAPS SET SERIALIZED_MAP = '" + encoded + "' WHERE MAP_HASH = " + map_hash);
-                logger.debug("Successful uploading map with hash = " + map_hash);
-            }
-        } catch (IOException | SQLException exc) {
-            logger.error("Exception occurred when executing uploadCache: ", exc);
+                String map_hash = rs.getString("map_hash");
+                if (map_hash == null)
+                    return null;
+                rs = statement.executeQuery("SELECT serialized_map FROM maps WHERE map_hash = '" + map_hash + "'");
+                while (rs.next()) {
+                    ObjectInputStream ooi = new ObjectInputStream(
+                            new ByteArrayInputStream(
+                                    Base64.getDecoder().decode(
+                                            rs.getString("serialized_map")
+                                    )
+                            )
+                    );
+                    try {
+                        map.Map map = (map.Map) ooi.readObject();
+                        pc.load(map);
+                    } catch (ClassNotFoundException exc) {
+                        return null;
+                    }
+                }
+                player = pc.find(id);
+                logger.debug("Successful downloading player from database");
+            } else
+                logger.debug("Successful uploading player from cache");
+            return player;
+        } catch (SQLException | IOException exc) {
+            logger.error(exc);
+            return null;
         }
     }
 
     private void createMap(map.Map map) {
         try {
+            pc.clean(this::deleteMap);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(map);
@@ -149,44 +156,57 @@ public class VampusBot extends TelegramLongPollingBot {
                             "INSERT INTO MAPS(MAP_HASH, SERIALIZED_MAP) VALUES(" +
                                     map_hash +
                                     ", '" +
-                                    Base64
-                                            .getEncoder()
-                                            .encodeToString(
-                                                    outputStream.toByteArray()
-                                            ) +
+                                    Base64.getEncoder().encodeToString(outputStream.toByteArray()) +
                                     "')"
                     );
             pc.load(map);
             logger.debug("Map with hash = " + map.hashCode() + " was successful uploaded to database");
         } catch (SQLException | IOException exc) {
-            logger.error("Exception occurred when executing createMap: ", exc);
+            logger.error(exc);
         }
     }
 
-    //TODO
-    private void deleteMap(int id) {
+    private void deleteMap(int map_hash) {
         try {
-            int map_hash = pc.delete(id);
             connection
                     .createStatement()
                     .execute("DELETE FROM maps WHERE map_hash = " + map_hash);
             logger.debug("Map with hash = " + map_hash + " was successful deleted");
         } catch (SQLException exc) {
-            logger.error("Exception occurred when executing deleteMap: ", exc);
+            logger.error(exc);
         }
     }
 
-    private void createUser(int id) {
+    private void uploadCache() {
         try {
-            connection
-                    .createStatement()
-                    .execute("INSERT INTO USERS(ID) VALUES(" + id + ")");
-            logger.debug("User with id = " + id + " was successful created");
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing createUser: ", exc);
+            logger.debug("Uploading cache(size = " + pc.maps().size() + ")");
+            for (map.Map map : pc.maps()) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+                oos.writeObject(map);
+                int map_hash = map.hashCode();
+                String encoded = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+                connection.createStatement().execute("UPDATE MAPS SET SERIALIZED_MAP = '" + encoded + "' WHERE MAP_HASH = " + map_hash);
+                logger.debug("Successful uploading map with hash = " + map_hash);
+            }
+        } catch (IOException | SQLException exc) {
+            logger.error(exc);
         }
     }
 
+    public void leaveGame(int id) {
+        pc.findMap(id).removePlayer(id);
+        pc.clean(this::deleteMap);
+        try {
+            connection.createStatement().execute("UPDATE USERS SET MAP_HASH = null WHERE ID = " + id);
+        } catch (SQLException exc) {
+            logger.error(exc);
+        }
+    }
+    //*****************************************************
+
+
+    //*******************Manage messages*******************
     private InlineKeyboardMarkup inline(Message message) {
         InlineKeyboardMarkup ikm = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
@@ -215,7 +235,7 @@ public class VampusBot extends TelegramLongPollingBot {
             sendApiMethod(editMessage);
             logger.debug("Message = " + message_id + " in chat = " + chat + " was edited");
         } catch (TelegramApiException exc) {
-            logger.error("Exception occurred when executing edit: ", exc);
+            logger.error(exc);
         }
     }
 
@@ -228,8 +248,8 @@ public class VampusBot extends TelegramLongPollingBot {
             logger.debug("Sending message to chat = " + chat);
             return sendApiMethod(sendMessage).getMessageId();
         } catch (TelegramApiException exc) {
-            logger.error("Exception occurred when executing send: ", exc);
-            return -1;
+            logger.error(exc);
+            return 0;
         }
     }
 
@@ -241,206 +261,281 @@ public class VampusBot extends TelegramLongPollingBot {
                             .setChatId(String.valueOf(chat))
             );
         } catch (TelegramApiException exc) {
-            logger.error("Exception occurred when executing delete: ", exc);
+            logger.error(exc);
         }
     }
 
-    public void sleep(int seconds) {
+    private void message(int id, String text, double showSeconds) {
+        new Thread(() -> {
+            int message = send(
+                    new Message(text),
+                    id
+            );
+            try {
+                Thread.sleep((long) (showSeconds * 1000));
+            } catch (InterruptedException exc) {
+                logger.error(exc);
+            }
+            delete(id, message);
+        }).start();
+    }
+    //*****************************************************
+
+
+    //********************Manage status********************
+    private String readStatus(int id) {
         try {
-            Thread.sleep(seconds * 1000L);
-        } catch (InterruptedException exc) {
-            logger.error("Exception occurred when executing sleep: ", exc);
+            ResultSet rs = connection
+                    .createStatement()
+                    .executeQuery("SELECT STATUS FROM USERS WHERE ID = " + id);
+            if (!rs.next())
+                return "";
+            return rs.getString("STATUS");
+        } catch (SQLException exc) {
+            logger.error(exc);
+            return "";
         }
     }
 
-    private void addGame(long id, int game, int owner_message) {
+    private void writeStatus(int id, String status) {
         try {
             connection
                     .createStatement()
-                    .execute(
-                            "INSERT INTO MAPS_TO_JOIN(GAME, OWNER_MESSAGE, PLAYERS) VALUES(" +
-                                    game + ", " +
-                                    owner_message + ", '" +
-                                    id + "')"
+                    .execute("UPDATE USERS SET STATUS = '" + status + "' WHERE ID = " + id);
+        } catch (SQLException exc) {
+            logger.error(exc);
+        }
+    }
+
+    private Message joinMessage() {
+        try {
+            ResultSet rs = connection
+                    .createStatement()
+                    .executeQuery("SELECT * FROM USERS");
+            Message message = new Message("Выберите игру:");
+            while (rs.next()) {
+                String[] args = rs.getString("STATUS").split(" ");
+                if (args[0].equals("create"))
+                    message.addRow(args[1] + ":join " + args[1]);
+            }
+            return message;
+        } catch (SQLException exc) {
+            logger.error(exc);
+            return null;
+        }
+    }
+    //*****************************************************
+
+
+    //******************Action listeners*******************
+    private void onText(int id, String message) {
+        String[] status = readStatus(id).split(" ");
+        Player player = findPlayer(id);
+        switch (message) {
+            case "/leave_game":
+                switch (status[0]) {
+                    case "join":
+                    case "game":
+                        writeStatus(id, "");
+                        message(id, "Вы успешно покинули текущую игру!", 5);
+                        return;
+                    case "create":
+                        try {
+                            ResultSet rs = connection
+                                    .createStatement()
+                                    .executeQuery("SELECT * FROM USERS");
+                            while (rs.next()) {
+                                String[] arr = rs.getString("STATUS").split(" ");
+                                if (arr[0].equals("join")) {
+                                    arr = arr[1].split(":");
+                                    if (arr[0].equals(status[1])) {
+                                        int i = rs.getInt("ID");
+                                        delete(Integer.parseInt(arr[1]), i);
+                                        writeStatus(i, "");
+                                    }
+                                }
+                            }
+                            writeStatus(id, "");
+                        } catch (SQLException exc) {
+                            logger.error(exc);
+                        }
+                        message(id, "Вы успешно покинули текущую игру!", 5);
+                        return;
+                    default:
+                        if (player != null) {
+                            leaveGame(id);
+                            player.removeInstance(this);
+                            message(id, "Вы успешно покинули текущую игру!", 5);
+                        } else {
+                            message(id, "На данный момент у вас нет активной игры!", 5);
+                        }
+                }
+                return;
+            case "/game":
+                if (
+                        player != null
+                                || status[0].equals("join")
+                                || status[0].equals("create")
+                                || status[0].equals("game")
+                        ) {
+                    message(id, "Вы уже в игре!", 5);
+                    return;
+                }
+                send(
+                        new Message("Игра:")
+                                .addRow("Присоединиться:join_game")
+                                .addRow("Одиночная игра:single_game")
+                                .addRow("Многопользовательская игра:multi_player_game"),
+                        id
+                );
+                return;
+            default:
+                if (status[0].equals("game")) {
+                    send(
+                            new Message("Новая игра: '" + message + "'. 0 человек присоединилось!")
+                                    .addRow("⥁:⥁")
+                                    .addRow("Начать:start_game"),
+                            id
                     );
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing addGame: ", exc);
+                    writeStatus(id, "create " + message);
+                }
+                break;
         }
-
     }
 
-    private void joinGame(long game, int id) {
-        try {
-            connection
-                    .createStatement()
-                    .execute(
-                            "UPDATE MAPS_TO_JOIN SET PLAYERS = CONCAT(PLAYERS, ' ', '" +
-                                    id +
-                                    "') WHERE GAME = " +
-                                    game
+    private void onCallbackQuery(int id, int message_id, String data) {
+        String[] status = readStatus(id).split(" ");
+        Player player = findPlayer(id);
+        String[] args = data.split(" ");
+        switch (args[0]) {
+            case "join_game":
+                if (
+                        player != null
+                                || status[0].equals("join")
+                                || status[0].equals("create")
+                                || status[0].equals("game")
+                        ) {
+                    message(id, "Вы уже в игре!", 5);
+                    delete(id, message_id);
+                    return;
+                }
+                Message message = joinMessage();
+                if (message != null)
+                    send(message, id);
+                delete(id, message_id);
+                return;
+            case "join":
+                String game = data.substring(5);
+                int messageId = send(
+                        new Message("Вы зарегестрировались в '" + game + "' игре. Ожидайте, пока создатель игры начнёт её или выйдите из игры: /leave_game"),
+                        id
+                );
+                writeStatus(id, "join " + game + ":" + messageId);
+                delete(id, message_id);
+                return;
+            case "single_game":
+                Map map = new MapGenerator().generateMap(id);
+                createMap(map);
+                map.player(0).newInstance(this);
+                delete(id, message_id);
+                return;
+            case "multi_player_game":
+                writeStatus(id, "game");
+                send(new Message("Введите название игры:"), id);
+                delete(id, message_id);
+                return;
+            case "⥁":
+                if (!status[0].equals("create"))
+                    return;
+                try {
+                    game = status[1];
+                    ResultSet rs = connection
+                            .createStatement()
+                            .executeQuery("SELECT * FROM USERS");
+                    int count = 0;
+                    while (rs.next()) {
+                        String[] arr = rs.getString("STATUS").split(" ");
+                        if (arr[0].equals("join") && arr[1].split(":")[0].equals(game))
+                            count++;
+                    }
+                    edit(
+                            new Message("Новая игра: '" + status[1] + "'. " + count + " человек присоединилось!")
+                                    .addRow("⥁:⥁")
+                                    .addRow("Начать:start_game"),
+                            id,
+                            message_id
                     );
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing joinGame: ", exc);
-        }
-    }
-
-    private void editOwner(long game) {
-        try {
-            ResultSet rs = connection
-                    .createStatement()
-                    .executeQuery("SELECT * FROM MAPS_TO_JOIN WHERE GAME = " + game);
-            rs.next();
-            edit(
-                    new Message(
-                            "Создана новая игра: " +
-                                    game +
-                                    ".\n" +
-                                    (
-                                            rs
-                                                    .getString("PLAYERS")
-                                                    .split(" ")
-                                                    .length - 1
-                                    ) +
-                                    " игроков присоеденилось."
-                    ).addRow("Начать:start_game " + game),
-                    Integer.parseInt(
-                            rs.getString("PLAYERS").split(" ")[0]
-                    ),
-                    rs.getInt("OWNER_MESSAGE")
-            );
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing ownerMessage: ", exc);
-        }
-    }
-
-    private List<Integer> gamesList() {
-        try {
-            ResultSet rs = connection
-                    .createStatement()
-                    .executeQuery("SELECT GAME FROM MAPS_TO_JOIN");
-            List<Integer> list = new ArrayList<>();
-            while (rs.next())
-                list.add(rs.getInt("GAME"));
-            return list;
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing gamesList: ", exc);
-            return new ArrayList<>();
-        }
-    }
-
-    private void createGame(int game) {
-        try {
-            ResultSet rs = connection
-                    .createStatement()
-                    .executeQuery("SELECT PLAYERS FROM MAPS_TO_JOIN WHERE GAME = " + game);
-            rs.next();
-            Map map = new MapGenerator().generateMap(
-                    Arrays
-                            .stream(rs.getString("PLAYERS").split(" "))
-                            .mapToInt(Integer::parseInt)
-                            .toArray()
-            );
-            createMap(map);
-            for (Player player: map.players())
-                player.newInstance(this);
-        } catch (SQLException exc) {
-            logger.error("Exception occurred when executing createGame: ", exc);
+                } catch (SQLException exc) {
+                    logger.error(exc);
+                }
+                return;
+            case "start_game":
+                try {
+                    if (!status[0].equals("create"))
+                        return;
+                    game = Joiner.on(" ").join(Arrays.stream(status).skip(1).toArray());
+                    ResultSet rs = connection
+                            .createStatement()
+                            .executeQuery("SELECT * FROM USERS");
+                    List<Integer> ids = new ArrayList<>();
+                    ids.add(id);
+                    while (rs.next()) {
+                        String[] cStatus = rs.getString("STATUS").split(" ");
+                        int cId = rs.getInt("ID");
+                        if (cStatus[0].equals("join")) {
+                            String[] arg = cStatus[1].split(":");
+                            if (arg[0].equals(game)) {
+                                ids.add(cId);
+                                delete(cId, Integer.parseInt(arg[1]));
+                                writeStatus(cId, "");
+                            }
+                        }
+                    }
+                    map = new MapGenerator().generateMap(
+                            Arrays
+                                    .stream(ids.toArray())
+                                    .map(Object::toString)
+                                    .mapToInt(Integer::parseInt)
+                                    .toArray()
+                    );
+                    createMap(map);
+                    for (Player plr : map.players())
+                        plr.newInstance(this);
+                    delete(id, message_id);
+                    writeStatus(id, "");
+                } catch (SQLException exc) {
+                    logger.error(exc);
+                }
+                return;
+            default:
+                if (player != null)
+                    player.action(this, data);
+                break;
         }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            if (update.hasMessage()) {
-                org.telegram.telegrambots.api.objects.Message message = update.getMessage();
-                assert message.getChatId() == (long) update.getMessage().getFrom().getId();
-                long chat_id = message.getChatId();
-                Player player = findPlayer((int) chat_id);
-                if (message.hasText()) {
-                    String text = message.getText();
-                    switch (text) {
-                        case "/game":
-                            if (player != null) {
-                                int message_id = send(
-                                        new Message("Вы уже в игре! Для начала покиньте текущую игру."),
-                                        chat_id
-                                );
-                                Thread.sleep(5000);
-                                delete(chat_id, message_id);
-                                return;
-                            }
-                            send(
-                                    new Message("Выбирите: ")
-                                            .addRow("Присоединиться к игре:join game")
-                                            .addRow("Новая многопользовательская игра:multi game")
-                                            .addRow("Новая  одиночная игра:single game"),
-                                    chat_id
-                            );
-                            break;
-                        case "/leave_game:":
-                            pc
-                                    .findMap((int) chat_id)
-                                    .removePlayer((int) chat_id);
-                            break;
-                        default:
-                            if (player != null)
-                                player.action(this, text);
-                            break;
-                    }
-                }
-            } else if (update.hasCallbackQuery()) {
-                CallbackQuery query = update.getCallbackQuery();
-
-                String data = query.getData();
-                int id = Math.toIntExact(query.getMessage().getChatId());
-                int currentMessage = query.getMessage().getMessageId();
-                Player player = findPlayer(id);
-                switch (data) {
-                    case "join game":
-                        delete(id, currentMessage);
-                        Message messageSend = new Message("Выберите игру:");
-                        for (int game : gamesList())
-                            messageSend.addRow(game + ":join " + game);
-                        send(messageSend, id);
-                        break;
-                    case "multi game":
-                        delete(id, currentMessage);
-                        int game = (int) (Math.random() * 10000);
-                        int owner_message = send(
-                                new Message("Создана новая игра: " + game + ".\n 0 игроков присоеденилось.")
-                                        .addRow("Начать:start_game " + game),
-                                id
-                        );
-                        addGame(id, game, owner_message);
-                        break;
-                    case "single game":
-                        delete(id, currentMessage);
-                        map.Map map = new MapGenerator().generateMap(id);
-                        createMap(map);
-                        map.player(0).action(this, "instance");
-                        break;
-                    default:
-                        String[] args = data.split(" ");
-                        if (args[0].equals("join")) {
-                            int g = Integer.valueOf(args[1]);
-                            joinGame(g, id);
-                            editOwner(g);
-                            delete(id, currentMessage);
-                        } else if (args[0].equals("start_game")) {
-                            int g = Integer.valueOf(args[1]);
-                            createGame(g);
-                        } else {
-                            if (player != null)
-                                player.action(this, data);
-                        }
-                        break;
-                }
-            }
+            if (update.hasMessage() && update.getMessage().hasText())
+                onText(
+                        (int) (long) update.getMessage().getChatId(),
+                        update.getMessage().getText()
+                );
+            else if (update.hasCallbackQuery())
+                onCallbackQuery(
+                        update.getCallbackQuery().getFrom().getId(),
+                        update.getCallbackQuery().getMessage().getMessageId(),
+                        update.getCallbackQuery().getData()
+                );
         } catch (Exception exc) {
-            logger.error("Exception occurred:", exc);
+            logger.error(exc);
         }
     }
+    //*****************************************************
 
+
+    //*******************Bot properties********************
     @Override
     public String getBotUsername() {
         return username;
@@ -450,4 +545,5 @@ public class VampusBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return token;
     }
+    //*****************************************************
 }

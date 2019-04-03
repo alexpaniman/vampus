@@ -19,7 +19,8 @@ public class Rifle extends Item {
     public Rifle() {
         super(
                 "🔫",
-                "Это ружьё, оно стреляет в выбраном направлении. Пуля летит до тех пор, пока не убьёт вампуса или не врежется в стену."
+                "Это ружьё, оно стреляет в выбраном направлении.\n" +
+                        "Пуля летит до тех пор, пока не убьёт вампуса или не врежется в стену."
         );
     }
 
@@ -44,7 +45,7 @@ public class Rifle extends Item {
                 break;
             case "←":
                 operator = Cell::left;
-                arrow = "⬅️";
+                arrow = "⬅";
                 break;
             case "→":
                 operator = Cell::right;
@@ -64,11 +65,14 @@ public class Rifle extends Item {
                 put(finalCell, arrow);
             }};
             player.instance(bot);
-            bot.sleep(1);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException exc) {
+                logger.error(exc);
+            }
             if (!cell.empty()) {
                 if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
-                    bot.edit(new Message("Попадание в вампуса!"), player.id(), player.gameInstance());
-                    bot.sleep(5);
+                    player.message(bot, "Попадание в вампуса!", 5);
                     if (cell.content().getClass() == Vampus.class)
                         cell.deleteContent();
                     else {
