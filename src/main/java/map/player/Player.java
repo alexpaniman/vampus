@@ -1,8 +1,8 @@
 package map.player;
 
 import bot.VampusBot;
-import javafx.util.Pair;
 import map.Message;
+import map.Pair;
 import map.cell.Cell;
 import map.content.deadly.Hole;
 import map.content.deadly.Vampus;

@@ -1,9 +1,9 @@
 package bot;
 
 import com.google.common.base.Joiner;
-import javafx.util.Pair;
 import map.Map;
 import map.Message;
+import map.Pair;
 import map.player.Player;
 import map.tools.MapGenerator;
 import map.tools.PlayersCache;
