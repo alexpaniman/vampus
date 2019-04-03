@@ -1,57 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="36e185af-0656-4040-a3b4-65c256b43455" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4964b72d-4cd9-4d18-98f4-2a47b65198b8.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bot/VampusBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bot/VampusBot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/cell/Cell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/cell/Cell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/Content.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/Content.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/Chest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/Chest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/RandomInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/RandomInstance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Bow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Crossbow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Crossbow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Rifle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Rifle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Teleport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/chest/items/Teleport.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/deadly/Hole.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/Hole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/deadly/Vampus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/Vampus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/deadly/VampusInHole.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/deadly/VampusInHole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/content/portal/Portal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/content/portal/Portal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/player/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/map/tools/PlayersCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/map/tools/PlayersCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/game_settings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/game_settings.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/bot/VampusBot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/bot/VampusBot.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/game_settings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/game_settings.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/log4j.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/log4j.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/cell/Cell$CellBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/cell/Cell$CellBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/cell/Cell.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/cell/Cell.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/Content.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/Content.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/Chest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/Chest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/RandomInstance.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/RandomInstance.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb$6.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bomb.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bow.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Bow.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Crossbow.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Crossbow.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Rifle.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/chest/items/Teleport.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/chest/items/Teleport.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/deadly/Hole.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/deadly/Hole.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/deadly/Vampus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/deadly/Vampus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/deadly/VampusInHole.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/deadly/VampusInHole.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/content/portal/Portal.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/content/portal/Portal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/player/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/player/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/map/tools/PlayersCache.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/map/tools/PlayersCache.class" afterDir="false" />
-    </list>
+    <list default="true" id="36e185af-0656-4040-a3b4-65c256b43455" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -144,7 +94,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
+            <state relative-caret-position="97">
               <caret line="29" column="48" selection-start-line="29" selection-start-column="48" selection-end-line="29" selection-end-column="48" />
             </state>
           </provider>
@@ -396,6 +346,17 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="vampus" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="vampus" type="b2602c69:ProjectViewProjectNode" />
+              <item name="vampus" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -493,12 +454,12 @@
       <workItem from="1554027653932" duration="8669000" />
       <workItem from="1554107602970" duration="9223000" />
       <workItem from="1554224255351" duration="8367000" />
-      <workItem from="1554297546041" duration="20979000" />
+      <workItem from="1554297546041" duration="21242000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="61313000" />
+    <option name="totallyTimeSpent" value="61576000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -522,7 +483,7 @@
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32897604" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.17320262" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32897604" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.8224401" />
       <window_info anchor="bottom" id="Database Console" order="7" weight="0.85294116" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12633263" />
       <window_info anchor="right" id="Bean Validation" order="3" />
@@ -583,50 +544,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/bot/VampusBot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8991">
-          <caret line="333" column="33" lean-forward="true" selection-start-line="333" selection-start-column="33" selection-end-line="333" selection-end-column="33" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="initializer##0;class#VampusBot#0" />
-            <element signature="method#main#0;class#VampusBot#0" />
-            <element signature="method#VampusBot#0;class#VampusBot#0" />
-            <element signature="method#createUser#0;class#VampusBot#0" />
-            <element signature="method#findPlayer#0;class#VampusBot#0" />
-            <element signature="method#createMap#0;class#VampusBot#0" />
-            <element signature="method#deleteMap#0;class#VampusBot#0" />
-            <element signature="method#uploadCache#0;class#VampusBot#0" />
-            <element signature="method#leaveGame#0;class#VampusBot#0" />
-            <element signature="method#inline#0;class#VampusBot#0" />
-            <element signature="method#edit#0;class#VampusBot#0" />
-            <element signature="method#send#0;class#VampusBot#0" />
-            <element signature="method#delete#0;class#VampusBot#0" />
-            <element signature="method#message#0;class#VampusBot#0" />
-            <element signature="method#readStatus#0;class#VampusBot#0" />
-            <element signature="method#writeStatus#0;class#VampusBot#0" />
-            <element signature="method#joinMessage#0;class#VampusBot#0" />
-            <element signature="method#onCallbackQuery#0;class#VampusBot#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/items/Bomb.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4374">
-          <caret line="162" selection-start-line="162" selection-end-line="162" />
-          <folding>
-            <element signature="method#defaultState#0;class#Bomb#0" />
-            <element signature="initializer##0;class#1605:1734" />
-            <element signature="initializer##0;class#1909:2038" />
-            <element signature="initializer##0;class#2215:2344" />
-            <element signature="initializer##0;class#2519:2648" />
-            <element signature="method#add#0;class#Bomb#0" />
-            <element signature="method#explode#0;class#Bomb#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/map/content/chest/Chest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="729">
@@ -1191,9 +1108,15 @@
     <entry file="file://$PROJECT_DIR$/Procfile">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/target/bin/Bot">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/target/bin/Bot.bat">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
+        <state relative-caret-position="97">
           <caret line="29" column="48" selection-start-line="29" selection-start-column="48" selection-end-line="29" selection-end-column="48" />
         </state>
       </provider>
