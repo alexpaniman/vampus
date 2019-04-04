@@ -14,7 +14,7 @@ public class Teleport extends Item {
     public Teleport() {
         super(
                 "⭖",
-                "Это телепорт, он может переместить вас в ближайшую пустую клетку."
+                "Это телепорт, он может переместить вас в пустую клетку."
         );
     }
 
@@ -26,25 +26,35 @@ public class Teleport extends Item {
                 .addRow("Отмена:cancel");
     }
 
+    private boolean goodCell(Cell cell) {
+        return cell == null || cell.content() == null || cell.content().getClass() == Chest.class || cell.content().getClass() == Portal.class;
+    }
+
     @Override
     public void changeState(VampusBot bot, Player player, String command) {
         switch (command) {
             case "teleport":
-                List<Cell> cells = Arrays.asList(
-                        player.position().up(),
-                        player.position().left(),
-                        player.position().right(),
-                        player.position().down()
-                );
-                Collections.shuffle(cells);
-                for (Cell cell: cells) {
-                    Class c = cell.empty()? null : cell.content().getClass();
-                    if (c == null || c == Chest.class || c == Portal.class) {
-                        player.teleport(cell);
-                        return;
+                Cell level = player.position().level();
+                List<Cell> upList = new ArrayList<>();
+                Cell cell = level;
+                do
+                    upList.add(cell);
+                while ((cell = cell.right()) != null);
+                Collections.shuffle(upList);
+                for (Cell c: upList) {
+                    cell = c;
+                    while (cell != null) {
+                        if (!cell.contains(player))
+                            if (cell.content() == null || cell.content().getClass() == Chest.class || cell.content().getClass() == Portal.class)
+                                if (goodCell(cell.up()) && goodCell(cell.down()) && goodCell(cell.right()) && goodCell(cell.left())) {
+                                    player.teleport(cell);
+                                    player.deleteItem(this);
+                                    return;
+                                }
+                        cell = cell.down();
                     }
                 }
-                player.deleteItem(this);
+                player.message(bot, "Такой клетки нет!", 5);
                 break;
         }
     }

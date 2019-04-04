@@ -56,10 +56,13 @@ public class Bow extends Item {
         if (!cell.empty())
             if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
                 player.message(bot, "Вы убили вампуса!", 5);
-                cell.deleteContent();
-                if (cell.content().getClass() == Vampus.class)
+                if (cell.content().getClass() == VampusInHole.class)
                     cell.setContent(new Hole());
+                else
+                    cell.deleteContent();
                 logger.info("Hitting vampus from bow!");
+                player.deleteItem(this);
+                return;
             }
         player.message(bot, "Вы промахнулись!", 5);
         player.deleteItem(this);
