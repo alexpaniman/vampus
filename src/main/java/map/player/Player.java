@@ -42,8 +42,25 @@ public class Player implements Serializable {
         this.game_inst = 0;
         this.items = new ArrayList<>();
         this.drawProperty = new HashMap<>();
+
+        remContent(pos.right());
+        remContent(pos.left());
+        remContent(pos.down());
+        remContent(pos.up());
+
         pos.addPlayer(this);
         logger.info("New player(id = " + id + ") was be created");
+    }
+
+    private void remContent(Cell cell) {
+        if (
+                        cell == null ||
+                        cell.content() == null ||
+                        cell.content().getClass() == Chest.class ||
+                        cell.content().getClass() == Portal.class
+                )
+            return;
+        cell.deleteContent();
     }
 
 
@@ -381,7 +398,8 @@ public class Player implements Serializable {
         StringBuilder mainBuilder = new StringBuilder();
         for (Cell rowCell : leftList) {
             StringBuilder row = new StringBuilder();
-            loop: do {
+            loop:
+            do {
                 if (position() == rowCell) {
                     row.append("\uD83D\uDC64");
                     continue;
@@ -393,7 +411,7 @@ public class Player implements Serializable {
                         continue loop;
                     }
                 }
-                */
+                /**/
                 Object image;
                 if ((image = drawPolicy.get(rowCell)) != null)
                     row.append(image);

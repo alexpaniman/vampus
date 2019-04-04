@@ -24,7 +24,8 @@ public class Portal implements Content {
 
     @Override
     public Message message() {
-        return new Message("Вы находитесь рядом с порталом!").addRow("Зайти в портал:content teleport");
+        return new Message("Вы находитесь рядом с порталом!")
+                .addRow("Зайти в портал:content teleport");
     }
 
     @Override

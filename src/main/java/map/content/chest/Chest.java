@@ -20,6 +20,7 @@ public class Chest implements Content {
                 random,
                 () -> null, Bow::new, Crossbow::new, Teleport::new, Rifle::new, Bomb::new
         ).instance(10, 30, 25, 20, 10, 5);
+        item = new Teleport();
     }
 
     public Chest() {
