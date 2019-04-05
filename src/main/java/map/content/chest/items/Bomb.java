@@ -11,7 +11,6 @@ import map.player.Player;
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -135,7 +134,7 @@ public class Bomb extends Item {
                                 .anyMatch(c -> c == cell.content().getClass())
                         )
                     cell.deleteContent();
-            player.addDrawProperty(new HashMap<Cell, String>() {{
+            player.putDraw(new HashMap<Cell, String>() {{
                 put(cell, cell.icon());
             }});
             if (count % 5 == 0) {

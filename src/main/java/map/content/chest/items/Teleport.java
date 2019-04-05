@@ -13,7 +13,7 @@ import java.util.*;
 public class Teleport extends Item {
     public Teleport() {
         super(
-                "⭖",
+                "\uD83D\uDD73",
                 "Это телепорт, он может переместить вас в пустую клетку."
         );
     }

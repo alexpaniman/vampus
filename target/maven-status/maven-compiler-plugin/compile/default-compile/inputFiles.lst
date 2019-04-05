@@ -1,3 +1,4 @@
+D:\Проекты Java\vampus\src\main\java\map\Pair.java
 D:\Проекты Java\vampus\src\main\java\map\Map.java
 D:\Проекты Java\vampus\src\main\java\map\content\chest\Item.java
 D:\Проекты Java\vampus\src\main\java\map\tools\PlayersCache.java
@@ -9,6 +10,7 @@ D:\Проекты Java\vampus\src\main\java\map\content\chest\RandomInstance.java
 D:\Проекты Java\vampus\src\main\java\map\content\Content.java
 D:\Проекты Java\vampus\src\main\java\map\content\portal\Portal.java
 D:\Проекты Java\vampus\src\main\java\map\content\chest\items\Bomb.java
+D:\Проекты Java\vampus\src\main\java\map\content\chest\items\Heal.java
 D:\Проекты Java\vampus\src\main\java\map\content\deadly\VampusInHole.java
 D:\Проекты Java\vampus\src\main\java\map\Message.java
 D:\Проекты Java\vampus\src\main\java\map\content\chest\items\Rifle.java

@@ -29,7 +29,9 @@ public class Heal extends Item {
         if (command.equals("heal")) {
             int hp = (int) Math.ceil(Math.random() * 2 + 1);
             hp = Math.min(player.hp() + hp, 10/*Max hp*/);
-            player.message(bot, "Вы восстановили " + (player.id() - hp) + "хп.", 5);
+            player.message(bot, "Вы восстановили " + (hp - player.hp()) + "хп.", 5);
+            player.setHp(hp);
+            player.deleteItem(this);
         }
     }
 }
