@@ -54,7 +54,7 @@ public class Player implements Serializable {
 
     private void remContent(Cell cell) {
         if (
-                        cell == null ||
+                cell == null ||
                         cell.content() == null ||
                         cell.content().getClass() == Chest.class ||
                         cell.content().getClass() == Portal.class
@@ -223,7 +223,7 @@ public class Player implements Serializable {
         if (next == null)
             return false;
         if (!next.empty()) {
-            if (next.content().enter(bot, this))
+            if (next.content().enter(bot, this, next))
                 teleport(next);
         } else {
             teleport(next);
@@ -295,7 +295,7 @@ public class Player implements Serializable {
 
 
     //***********************Drawing***********************
-    public void addDrawProperty(Map<Cell, String> drawProperty) {
+    public void putDraw(Map<Cell, String> drawProperty) {
         this.drawProperty.putAll(drawProperty);
     }
 
@@ -310,14 +310,15 @@ public class Player implements Serializable {
                 .collect(Collectors.toSet());
         boolean smell = false;
         boolean wind = false;
+
+        if (set.contains(Hole.class))
+            wind = true;
+        if (set.contains(Vampus.class))
+            smell = true;
         if (set.contains(VampusInHole.class)) {
             smell = true;
             wind = true;
         }
-        if (set.contains(Vampus.class))
-            smell = true;
-        if (set.contains(Hole.class))
-            wind = true;
 
         if (smell && wind)
             return "\uD83C\uDF2B";
@@ -349,13 +350,8 @@ public class Player implements Serializable {
         }
     }
 
-    private String feelingsMessage(Player player) {
-        Set<Class> set = Stream.of(
-                player.position().down(),
-                player.position().right(),
-                player.position().up(),
-                player.position().left()
-        )
+    private String feelingsMessage() {
+        Set<Class> set = Stream.of(pos.down(), pos.right(), pos.up(), pos.left())
                 .filter(Objects::nonNull)
                 .map(Cell::content)
                 .filter(Objects::nonNull)
@@ -446,7 +442,7 @@ public class Player implements Serializable {
                 .append("\n")
                 .append(line)
                 .append("\n")
-                .append(toLines(feelingsMessage(this), right_size * 2))
+                .append(toLines(feelingsMessage(), right_size * 2))
                 .append("\n");
         if (active != null) {
             mainBuilder

@@ -2,10 +2,12 @@ package map.content.chest;
 
 import bot.VampusBot;
 import map.Message;
+import map.cell.Cell;
 import map.content.chest.items.*;
 import map.content.Content;
 import map.player.Player;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,10 +30,9 @@ public class Chest implements Content {
 
     @Override
     public void changeState(VampusBot bot, Player player, String command) {
-        if (command.equals("get")) {
+        if (command.equals("get"))
             if (player.addItem(bot, item))
                 player.position().deleteContent();
-        }
     }
 
     @Override
