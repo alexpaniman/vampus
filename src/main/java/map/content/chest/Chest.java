@@ -18,8 +18,8 @@ public class Chest implements Content {
     private Chest(Random random) {
         item = new RandomInstance<>(
                 random,
-                () -> null, Bow::new, Crossbow::new, Teleport::new, Rifle::new, Bomb::new
-        ).instance(0, 35, 25, 20, 10, 10);
+                () -> null, Heal::new, Bow::new, Crossbow::new, Teleport::new, Rifle::new, Bomb::new
+        ).instance(0, 20, 20, 20, 20, 10, 10);
     }
 
     public Chest() {

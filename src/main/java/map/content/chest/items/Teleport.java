@@ -32,30 +32,29 @@ public class Teleport extends Item {
 
     @Override
     public void changeState(VampusBot bot, Player player, String command) {
-        switch (command) {
-            case "teleport":
-                Cell level = player.position().level();
-                List<Cell> upList = new ArrayList<>();
-                Cell cell = level;
-                do
-                    upList.add(cell);
-                while ((cell = cell.right()) != null);
-                Collections.shuffle(upList);
-                for (Cell c: upList) {
-                    cell = c;
-                    while (cell != null) {
-                        if (!cell.contains(player))
-                            if (cell.content() == null || cell.content().getClass() == Chest.class || cell.content().getClass() == Portal.class)
-                                if (goodCell(cell.up()) && goodCell(cell.down()) && goodCell(cell.right()) && goodCell(cell.left())) {
-                                    player.teleport(cell);
-                                    player.deleteItem(this);
-                                    return;
-                                }
-                        cell = cell.down();
-                    }
+        if ("teleport".equals(command)) {
+            Cell level = player.position().level();
+            List<Cell> upList = new ArrayList<>();
+            Cell cell = level;
+            do
+                upList.add(cell);
+            while ((cell = cell.right()) != null);
+            Collections.shuffle(upList);
+            for (Cell c : upList) {
+                cell = c;
+                while (cell != null) {
+                    if (!cell.contains(player))
+                        if (cell.content() == null || cell.content().getClass() == Chest.class || cell.content().getClass() == Portal.class)
+                            if (goodCell(cell.up()) && goodCell(cell.down()) && goodCell(cell.right()) && goodCell(cell.left())) {
+                                player.teleport(cell);
+                                player.deleteItem(this);
+                                return;
+                            }
+                    cell = cell.down();
                 }
-                player.message(bot, "Такой клетки нет!", 5);
-                break;
+            }
+            player.message(bot, "Такой клетки нет!", 5);
+
         }
     }
 }
