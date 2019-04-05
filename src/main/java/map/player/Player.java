@@ -64,9 +64,17 @@ public class Player implements Serializable {
     }
 
 
-    //*******************Unique user id********************
+    //*****************Getters and setters*****************
     public long id() {
         return id;
+    }
+
+    public int hp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
     }
     //*****************************************************
 
@@ -248,13 +256,13 @@ public class Player implements Serializable {
                     instance(bot, false, false);
                     break;
                 case "instance":
-                    instance(bot, true, false);
+                    instance(bot, false, false);
                     logger.info("Creating new game instance: " + game_inst);
                     break;
                 case "cancel":
                     logger.debug("Deactivate " + active.icon());
                     this.active = null;
-                    instance(bot, true, false);
+                    instance(bot, false, false);
                     break;
                 default:
                     String[] command = action.split(" ");
@@ -305,9 +313,10 @@ public class Player implements Serializable {
         if (set.contains(VampusInHole.class)) {
             smell = true;
             wind = true;
-        } else if (set.contains(Vampus.class))
+        }
+        if (set.contains(Vampus.class))
             smell = true;
-        else if (set.contains(Hole.class))
+        if (set.contains(Hole.class))
             wind = true;
 
         if (smell && wind)
@@ -358,9 +367,9 @@ public class Player implements Serializable {
 
         if (set.contains(Hole.class))
             wind = true;
-        else if (set.contains(Vampus.class))
+        if (set.contains(Vampus.class))
             smell = true;
-        else if (set.contains(VampusInHole.class)) {
+        if (set.contains(VampusInHole.class)) {
             smell = true;
             wind = true;
         }
@@ -398,7 +407,7 @@ public class Player implements Serializable {
         StringBuilder mainBuilder = new StringBuilder();
         for (Cell rowCell : leftList) {
             StringBuilder row = new StringBuilder();
-            loop:
+            /*loop:*/
             do {
                 if (position() == rowCell) {
                     row.append("\uD83D\uDC64");

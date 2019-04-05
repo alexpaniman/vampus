@@ -165,8 +165,8 @@ public class MapGenerator {
         while (portal_list.size() > empty_list.size() - id.length)
             portal_list.remove(random.nextInt(portal_list.size()));
 
-        if (portal_to_link != null && !portal_to_link.empty())
-            portal_list.add((Portal) portal_to_link.content());
+        if (portal_to_link != null)
+            portal_to_link.deleteContent();
 
         for (Portal portal : portal_list)
             portal.setDest(empty_list.remove(random.nextInt(empty_list.size())));

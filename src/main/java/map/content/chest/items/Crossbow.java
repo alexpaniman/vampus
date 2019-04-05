@@ -20,8 +20,8 @@ public class Crossbow extends Item {
     public Crossbow() {
         super(
                 "⤭",
-                "Это арбалет, он стреляет в три случайные клетки рядом с вами.\n" +
-                        "Если попадает в вампуса, то убивает его.\n" +
+                "Это арбалет, он стреляет в четыре случайные клетки рядом с вами. " +
+                        "Если попадает в вампуса, то убивает его. " +
                         "Арбалет может выстрелить в одну и ту же клетку несколько раз."
         );
     }
@@ -36,24 +36,30 @@ public class Crossbow extends Item {
 
     @Override
     public void changeState(VampusBot bot, Player player, String command) {
-        switch (command) {
-            case "shot":
-                Cell pos = player.position();
-                RandomInstance<Cell> random = new RandomInstance<>(new Random(), pos::up, pos::down, pos::left, pos::right);
-                for (int i = 0; i < 3; i++) {
-                    Cell cell = random.instance(25, 25, 25, 25);
-                    if (!cell.empty())
-                        if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
-                            if (cell.content().getClass() == VampusInHole.class)
-                                cell.setContent(new Hole());
-                            else
-                                cell.deleteContent();
-                            player.message(bot, "Вы убили вампуса!", 5);
-                            logger.info("Hitting vampus from crossbow!");
-                        }
-                }
-                player.deleteItem(this);
-                break;
+        if ("shot".equals(command)) {
+            Cell pos = player.position();
+            RandomInstance<Cell> random = new RandomInstance<>(new Random(), pos::up, pos::down, pos::left, pos::right);
+            int count = 0;
+            for (int i = 0; i < 4; i++) {
+                Cell cell = random.instance(25, 25, 25, 25);
+                if (!cell.empty())
+                    if (cell.content().getClass() == Vampus.class || cell.content().getClass() == VampusInHole.class) {
+                        if (cell.content().getClass() == VampusInHole.class)
+                            cell.setContent(new Hole());
+                        else
+                            cell.deleteContent();
+                        count++;
+
+                        logger.info("Hitting vampus from crossbow!");
+                    }
+            }
+            if (count == 0)
+                player.message(bot, "Вы промахнулись!", 5);
+            else if (count == 1)
+                player.message(bot, "Вы убили вампуса!", 5);
+            else
+                player.message(bot, "Вы убили " + count + " вампусов!", 5);
+            player.deleteItem(this);
         }
     }
 }
